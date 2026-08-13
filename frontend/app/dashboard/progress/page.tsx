@@ -1,9 +1,11 @@
 "use client";
-import { mockUser } from '@/lib/mock-data';
+import { useResume } from '@/lib/ResumeContext';
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
-import { Award, Flame, CheckCircle, Clock } from 'lucide-react';
-import { SpotlightTiltCard } from '@/components/ui/SpotlightTiltCard';
+import { Award, Flame, CheckCircle, Clock, FileText } from 'lucide-react';
+import Link from 'next/link';
+import { useMemo } from 'react';
 
+// Activity chart is local UI state (not backed by an API)
 const activityData = [
   { name: 'Mon', hours: 2 },
   { name: 'Tue', hours: 3.5 },
@@ -15,82 +17,114 @@ const activityData = [
 ];
 
 export default function ProgressDashboard() {
+  const { roadmapPhases, interviewScore, hasData, gaps } = useResume();
+
+  // Dynamic calculations from live data — NO AI logic
+  const { completedTasks, totalTasks, readinessScore, totalHours } = useMemo(() => {
+    const allTasks = roadmapPhases.flatMap(p => p.tasks);
+    const total = allTasks.length;
+    const completed = allTasks.filter(t => t.completed).length;
+    const roadmapPct = total > 0 ? Math.round((completed / total) * 100) : 0;
+    const readiness = total > 0 ? Math.round((roadmapPct + interviewScore) / 2) : interviewScore;
+    // Sum up activity hours for the week
+    const hours = activityData.reduce((sum, d) => sum + d.hours, 0);
+    return { completedTasks: completed, totalTasks: total, readinessScore: readiness, totalHours: hours };
+  }, [roadmapPhases, interviewScore]);
+
+  // Dynamic milestones derived from actual progress
+  const milestones = useMemo(() => {
+    const items: { emoji: string; title: string; description: string; color: string }[] = [];
+
+    if (hasData) {
+      items.push({ emoji: '📄', title: 'Resume Parsed', description: `${gaps.length} skill gaps identified`, color: 'bg-orange-500/20' });
+    }
+    if (roadmapPhases.length > 0) {
+      items.push({ emoji: '🗺️', title: 'Roadmap Generated', description: `${totalTasks} tasks across ${roadmapPhases.length} phases`, color: 'bg-blue-500/20' });
+    }
+    if (completedTasks > 0) {
+      items.push({ emoji: '🚀', title: `${completedTasks} Tasks Completed`, description: `${Math.round((completedTasks / totalTasks) * 100)}% roadmap progress`, color: 'bg-green-500/20' });
+    }
+    if (interviewScore > 0) {
+      items.push({ emoji: '🎯', title: 'Interview Attempted', description: `Latest score: ${interviewScore}/100`, color: 'bg-purple-500/20' });
+    }
+    if (items.length === 0) {
+      items.push({ emoji: '👋', title: 'Welcome!', description: 'Upload your resume to get started', color: 'bg-slate-500/20' });
+    }
+    return items;
+  }, [hasData, gaps.length, roadmapPhases.length, totalTasks, completedTasks, interviewScore]);
+
+  // Empty state
+  if (!hasData) {
+    return (
+      <div className="max-w-6xl mx-auto flex flex-col items-center justify-center min-h-[60vh] text-center">
+        <div className="w-20 h-20 bg-white/5 border border-white/10 rounded-3xl flex items-center justify-center mb-8">
+          <FileText className="w-10 h-10 text-slate-500" />
+        </div>
+        <h2 className="text-3xl font-bold text-white mb-3 tracking-tight">No Progress Data Yet</h2>
+        <p className="text-slate-400 text-lg mb-8 max-w-md">Upload your resume to start tracking your learning journey and milestones.</p>
+        <Link href="/dashboard/resume" className="bg-blue-600 hover:bg-blue-500 text-white px-8 py-3 rounded-xl font-bold transition-all shadow-[0_0_20px_rgba(37,99,235,0.4)]">
+          Upload Resume
+        </Link>
+      </div>
+    );
+  }
+
   return (
-    <div className="max-w-6xl mx-auto text-left">
+    <div className="max-w-6xl mx-auto animate-in fade-in duration-500">
       <div className="mb-8">
         <h2 className="text-3xl font-bold text-white mb-2">My Progress</h2>
         <p className="text-slate-400">Track your learning journey and milestones.</p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 mb-8">
-        <SpotlightTiltCard 
-          spotlightColor="rgba(249, 115, 22, 0.15)"
-          className="bg-[#030712]/50 backdrop-blur-xl border border-white/10 p-6 flex items-center gap-4 rounded-3xl shadow-xl"
-        >
-          <div className="absolute -top-24 -right-24 w-48 h-48 bg-purple-500/10 rounded-full blur-[80px] group-hover:bg-purple-500/20 transition-colors duration-700 pointer-events-none"></div>
-          <div className="absolute inset-0 bg-grid pointer-events-none opacity-20 group-hover:opacity-50 transition-opacity duration-700"></div>
-          <div className="relative z-10 w-12 h-12 rounded-full bg-orange-500/20 flex items-center justify-center shrink-0">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div className="glass-card p-6 flex items-center gap-4 relative overflow-hidden group">
+          <div className="absolute inset-0 bg-grid opacity-[0.04] pointer-events-none"></div>
+          <div className="relative z-10 w-12 h-12 rounded-full bg-orange-500/20 flex items-center justify-center">
             <Flame className="w-6 h-6 text-orange-400" />
           </div>
-          <div className="relative z-10">
-            <p className="text-sm text-slate-400">Current Streak</p>
-            <p className="text-2xl font-bold text-white">{mockUser.streak} Days</p>
+          <div>
+            <p className="text-sm text-slate-400">Skill Gaps</p>
+            <p className="text-2xl font-bold text-white">{gaps.length}</p>
           </div>
-        </SpotlightTiltCard>
+        </div>
 
-        <SpotlightTiltCard 
-          spotlightColor="rgba(59, 130, 246, 0.15)"
-          className="bg-[#030712]/50 backdrop-blur-xl border border-white/10 p-6 flex items-center gap-4 rounded-3xl shadow-xl"
-        >
-          <div className="absolute -top-24 -right-24 w-48 h-48 bg-purple-500/10 rounded-full blur-[80px] group-hover:bg-purple-500/20 transition-colors duration-700 pointer-events-none"></div>
-          <div className="absolute inset-0 bg-grid pointer-events-none opacity-20 group-hover:opacity-50 transition-opacity duration-700"></div>
-          <div className="relative z-10 w-12 h-12 rounded-full bg-blue-500/20 flex items-center justify-center shrink-0">
+        <div className="glass-card p-6 flex items-center gap-4 relative overflow-hidden group">
+          <div className="absolute inset-0 bg-grid opacity-[0.04] pointer-events-none"></div>
+          <div className="relative z-10 w-12 h-12 rounded-full bg-blue-500/20 flex items-center justify-center">
             <Clock className="w-6 h-6 text-blue-400" />
           </div>
-          <div className="relative z-10">
+          <div>
             <p className="text-sm text-slate-400">Hours This Week</p>
-            <p className="text-2xl font-bold text-white">21 hrs</p>
+            <p className="text-2xl font-bold text-white">{totalHours} hrs</p>
           </div>
-        </SpotlightTiltCard>
+        </div>
 
-        <SpotlightTiltCard 
-          spotlightColor="rgba(34, 197, 94, 0.15)"
-          className="bg-[#030712]/50 backdrop-blur-xl border border-white/10 p-6 flex items-center gap-4 rounded-3xl shadow-xl"
-        >
-          <div className="absolute -top-24 -right-24 w-48 h-48 bg-purple-500/10 rounded-full blur-[80px] group-hover:bg-purple-500/20 transition-colors duration-700 pointer-events-none"></div>
-          <div className="absolute inset-0 bg-grid pointer-events-none opacity-20 group-hover:opacity-50 transition-opacity duration-700"></div>
-          <div className="relative z-10 w-12 h-12 rounded-full bg-green-500/20 flex items-center justify-center shrink-0">
+        <div className="glass-card p-6 flex items-center gap-4 relative overflow-hidden group">
+          <div className="absolute inset-0 bg-grid opacity-[0.04] pointer-events-none"></div>
+          <div className="relative z-10 w-12 h-12 rounded-full bg-green-500/20 flex items-center justify-center">
             <CheckCircle className="w-6 h-6 text-green-400" />
           </div>
-          <div className="relative z-10">
+          <div>
             <p className="text-sm text-slate-400">Tasks Completed</p>
-            <p className="text-2xl font-bold text-white">14</p>
+            <p className="text-2xl font-bold text-white">{completedTasks}/{totalTasks}</p>
           </div>
-        </SpotlightTiltCard>
+        </div>
 
-        <SpotlightTiltCard 
-          spotlightColor="rgba(139, 92, 246, 0.15)"
-          className="bg-[#030712]/50 backdrop-blur-xl border border-white/10 p-6 flex items-center gap-4 rounded-3xl shadow-xl"
-        >
-          <div className="absolute -top-24 -right-24 w-48 h-48 bg-purple-500/10 rounded-full blur-[80px] group-hover:bg-purple-500/20 transition-colors duration-700 pointer-events-none"></div>
-          <div className="absolute inset-0 bg-grid pointer-events-none opacity-20 group-hover:opacity-50 transition-opacity duration-700"></div>
-          <div className="relative z-10 w-12 h-12 rounded-full bg-purple-500/20 flex items-center justify-center shrink-0">
+        <div className="glass-card p-6 flex items-center gap-4 relative overflow-hidden group">
+          <div className="absolute inset-0 bg-grid opacity-[0.04] pointer-events-none"></div>
+          <div className="relative z-10 w-12 h-12 rounded-full bg-purple-500/20 flex items-center justify-center">
             <Award className="w-6 h-6 text-purple-400" />
           </div>
-          <div className="relative z-10">
+          <div>
             <p className="text-sm text-slate-400">Readiness</p>
-            <p className="text-2xl font-bold text-white">{mockUser.readinessScore}/100</p>
+            <p className="text-2xl font-bold text-white">{readinessScore}/100</p>
           </div>
-        </SpotlightTiltCard>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <SpotlightTiltCard 
-          spotlightColor="rgba(59, 130, 246, 0.15)"
-          className="bg-[#030712]/50 backdrop-blur-xl border border-white/10 p-6 col-span-1 lg:col-span-2 rounded-3xl shadow-xl"
-        >
-          <div className="absolute -top-24 -right-24 w-48 h-48 bg-purple-500/10 rounded-full blur-[80px] group-hover:bg-purple-500/20 transition-colors duration-700 pointer-events-none"></div>
-          <div className="absolute inset-0 bg-grid pointer-events-none opacity-20 group-hover:opacity-50 transition-opacity duration-700"></div>
+        <div className="glass-card p-6 col-span-1 lg:col-span-2 relative overflow-hidden group">
+          <div className="absolute inset-0 bg-grid opacity-[0.04] pointer-events-none"></div>
           <h3 className="relative z-10 text-lg font-semibold text-white mb-6">Learning Activity (Last 7 Days)</h3>
           <div className="relative z-10 h-[300px] w-full -ml-4">
             <ResponsiveContainer width="100%" height="100%">
@@ -112,54 +146,28 @@ export default function ProgressDashboard() {
               </AreaChart>
             </ResponsiveContainer>
           </div>
-        </SpotlightTiltCard>
+        </div>
 
-        <SpotlightTiltCard 
-          spotlightColor="rgba(139, 92, 246, 0.15)"
-          className="bg-[#030712]/50 backdrop-blur-xl border border-white/10 p-6 rounded-3xl shadow-xl text-left"
-        >
-          <div className="absolute -top-24 -right-24 w-48 h-48 bg-purple-500/10 rounded-full blur-[80px] group-hover:bg-purple-500/20 transition-colors duration-700 pointer-events-none"></div>
-          <div className="absolute inset-0 bg-grid pointer-events-none opacity-20 group-hover:opacity-50 transition-opacity duration-700"></div>
-          <h3 className="relative z-10 text-lg font-semibold text-white mb-6">Recent Milestones</h3>
+        <div className="glass-card p-6 relative overflow-hidden group">
+          <div className="absolute inset-0 bg-grid opacity-[0.04] pointer-events-none"></div>
+          <h3 className="relative z-10 text-lg font-semibold text-white mb-6">Milestones</h3>
           <div className="relative z-10 space-y-6">
-            
-            <div className="flex gap-4 relative">
-              <div className="absolute left-6 top-10 bottom-[-24px] w-0.5 bg-slate-800"></div>
-              <div className="w-12 h-12 shrink-0 bg-blue-500/20 rounded-full flex items-center justify-center relative z-10 border-4 border-[#0f172a]">
-                <span className="text-xl">🚀</span>
+            {milestones.map((milestone, idx) => (
+              <div key={idx} className="flex gap-4 relative">
+                {idx < milestones.length - 1 && (
+                  <div className="absolute left-6 top-10 bottom-[-24px] w-0.5 bg-slate-800"></div>
+                )}
+                <div className={`w-12 h-12 shrink-0 ${milestone.color} rounded-full flex items-center justify-center relative z-10 border-4 border-[#0f172a]`}>
+                  <span className="text-xl">{milestone.emoji}</span>
+                </div>
+                <div>
+                  <h4 className="font-semibold text-slate-200">{milestone.title}</h4>
+                  <p className="text-sm text-slate-400">{milestone.description}</p>
+                </div>
               </div>
-              <div>
-                <h4 className="font-semibold text-slate-200">Started React Journey</h4>
-                <p className="text-sm text-slate-400">Completed Foundation Phase</p>
-                <span className="text-xs text-slate-500 mt-1 block">2 days ago</span>
-              </div>
-            </div>
-
-            <div className="flex gap-4 relative">
-              <div className="absolute left-6 top-10 bottom-[-24px] w-0.5 bg-slate-800"></div>
-              <div className="w-12 h-12 shrink-0 bg-purple-500/20 rounded-full flex items-center justify-center relative z-10 border-4 border-[#0f172a]">
-                <span className="text-xl">🔥</span>
-              </div>
-              <div>
-                <h4 className="font-semibold text-slate-200">10 Day Streak</h4>
-                <p className="text-sm text-slate-400">Consistent learning pays off!</p>
-                <span className="text-xs text-slate-500 mt-1 block">5 days ago</span>
-              </div>
-            </div>
-
-            <div className="flex gap-4 relative">
-              <div className="w-12 h-12 shrink-0 bg-orange-500/20 rounded-full flex items-center justify-center relative z-10 border-4 border-[#0f172a]">
-                <span className="text-xl">📄</span>
-              </div>
-              <div>
-                <h4 className="font-semibold text-slate-200">Resume Parsed</h4>
-                <p className="text-sm text-slate-400">Account created & gaps identified</p>
-                <span className="text-xs text-slate-500 mt-1 block">2 weeks ago</span>
-              </div>
-            </div>
-
+            ))}
           </div>
-        </SpotlightTiltCard>
+        </div>
       </div>
     </div>
   );

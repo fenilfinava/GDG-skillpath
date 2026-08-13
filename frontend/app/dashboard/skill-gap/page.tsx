@@ -1,14 +1,30 @@
 "use client";
-import { skillGaps, mockUser } from '@/lib/mock-data';
+import { useResume } from '@/lib/ResumeContext';
 import { ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, Legend, Tooltip } from 'recharts';
-import { Target, AlertTriangle, ArrowRight } from 'lucide-react';
+import { Target, AlertTriangle, ArrowRight, FileText } from 'lucide-react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { SpotlightTiltCard } from '@/components/ui/SpotlightTiltCard';
-import { GlowingProgressBar } from '@/components/ui/GlowingProgressBar';
 
 export default function SkillGapDashboard() {
-  const chartData = skillGaps.map(gap => ({
+  const { gaps, targetRole, hasData } = useResume();
+
+  // Empty state: no resume uploaded yet
+  if (!hasData || gaps.length === 0) {
+    return (
+      <div className="max-w-6xl mx-auto flex flex-col items-center justify-center min-h-[60vh] text-center">
+        <div className="w-20 h-20 bg-white/5 border border-white/10 rounded-3xl flex items-center justify-center mb-8">
+          <FileText className="w-10 h-10 text-slate-500" />
+        </div>
+        <h2 className="text-3xl font-bold text-white mb-3 tracking-tight">No Skill Data Yet</h2>
+        <p className="text-slate-400 text-lg mb-8 max-w-md">Upload your resume first so our AI can identify your skill gaps and build a proficiency analysis.</p>
+        <Link href="/dashboard/resume" className="bg-blue-600 hover:bg-blue-500 text-white px-8 py-3 rounded-xl font-bold transition-all shadow-[0_0_20px_rgba(37,99,235,0.4)]">
+          Upload Resume
+        </Link>
+      </div>
+    );
+  }
+
+  const chartData = gaps.map(gap => ({
     subject: gap.name,
     Current: gap.currentLevel,
     Target: gap.targetLevel,
@@ -20,7 +36,7 @@ export default function SkillGapDashboard() {
       <div className="mb-10 flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
         <div>
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">Skill Gap Analysis</h2>
-          <p className="text-slate-400 text-lg">Comparing your current skills against the <span className="text-blue-400 font-semibold">{mockUser.targetRole}</span> requirements.</p>
+          <p className="text-slate-400 text-lg">Comparing your current skills against the <span className="text-blue-400 font-semibold">{targetRole}</span> requirements.</p>
         </div>
         <Link href="/dashboard/roadmap" className="bg-blue-600 hover:bg-blue-500 text-white px-8 py-3 rounded-xl font-bold transition-all flex items-center gap-2 shadow-[0_0_20px_rgba(37,99,235,0.4)] hover:shadow-[0_0_30px_rgba(37,99,235,0.6)]">
           Generate Roadmap <ArrowRight className="w-5 h-5" />
@@ -28,9 +44,8 @@ export default function SkillGapDashboard() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-        <SpotlightTiltCard spotlightColor="rgba(59, 130, 246, 0.15)" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.1 }} className="bg-[#030712]/50 backdrop-blur-xl border border-white/10 rounded-3xl p-8 shadow-2xl flex flex-col min-h-[450px]">
-          <div className="absolute -top-24 -right-24 w-48 h-48 bg-purple-500/10 rounded-full blur-[80px] group-hover:bg-purple-500/20 transition-colors duration-700 pointer-events-none"></div>
-            <div className="absolute inset-0 bg-grid pointer-events-none opacity-20 group-hover:opacity-50 transition-opacity duration-700"></div>
+        <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.1 }} className="bg-[#030712]/50 backdrop-blur-xl border border-white/10 rounded-3xl p-8 shadow-2xl flex flex-col min-h-[450px] relative overflow-hidden">
+          <div className="absolute inset-0 bg-grid opacity-[0.04] pointer-events-none"></div>
           <h3 className="text-xl font-bold text-white mb-8 flex items-center gap-3 relative z-10">
             <Target className="w-6 h-6 text-blue-400" /> Skill Proficiency Radar
           </h3>
@@ -47,16 +62,15 @@ export default function SkillGapDashboard() {
               </RadarChart>
             </ResponsiveContainer>
           </div>
-        </SpotlightTiltCard>
+        </motion.div>
 
-        <SpotlightTiltCard spotlightColor="rgba(249, 115, 22, 0.15)" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }} className="bg-[#030712]/50 backdrop-blur-xl border border-white/10 rounded-3xl p-8 shadow-2xl flex flex-col relative overflow-hidden">
-          <div className="absolute -top-24 -right-24 w-48 h-48 bg-purple-500/10 rounded-full blur-[80px] group-hover:bg-purple-500/20 transition-colors duration-700 pointer-events-none"></div>
-            <div className="absolute inset-0 bg-grid pointer-events-none opacity-20 group-hover:opacity-50 transition-opacity duration-700"></div>
+        <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }} className="bg-[#030712]/50 backdrop-blur-xl border border-white/10 rounded-3xl p-8 shadow-2xl flex flex-col relative overflow-hidden">
+          <div className="absolute inset-0 bg-grid opacity-[0.04] pointer-events-none"></div>
           <h3 className="text-xl font-bold text-white mb-8 flex items-center gap-3 relative z-10">
             <AlertTriangle className="w-6 h-6 text-orange-400" /> Prioritized Gaps
           </h3>
           <div className="flex-1 overflow-y-auto pr-2 space-y-4 relative z-10 custom-scrollbar">
-            {skillGaps.map((gap, idx) => (
+            {gaps.map((gap, idx) => (
               <motion.div 
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -82,24 +96,30 @@ export default function SkillGapDashboard() {
                   <span>Current: {gap.currentLevel}%</span>
                   <span>Target: {gap.targetLevel}%</span>
                 </div>
-                <GlowingProgressBar 
-                  value={gap.currentLevel} 
-                  targetValue={gap.targetLevel}
-                  glowColor={
-                    gap.priority === 'Critical' ? 'rgba(239, 68, 68, 0.4)' :
-                    gap.priority === 'Important' ? 'rgba(249, 115, 22, 0.4)' :
-                    'rgba(59, 130, 246, 0.4)'
-                  }
-                  barClassName={
-                    gap.priority === 'Critical' ? 'bg-gradient-to-r from-red-600 to-red-400' :
-                    gap.priority === 'Important' ? 'bg-gradient-to-r from-orange-600 to-orange-400' :
-                    'bg-gradient-to-r from-blue-600 to-blue-400'
-                  }
-                />
+                {/* Premium Animated Progress Bar */}
+                <div className="h-3 w-full bg-slate-800/80 rounded-full overflow-hidden relative shadow-inner">
+                  {/* Target Line */}
+                  <div className="absolute top-0 bottom-0 w-0.5 bg-white/50 z-10" style={{ left: `${gap.targetLevel}%` }}></div>
+                  
+                  {/* Animated Fill Track */}
+                  <motion.div 
+                    initial={{ width: 0 }}
+                    animate={{ width: `${gap.currentLevel}%` }}
+                    transition={{ duration: 1.5, ease: "easeOut", delay: 0.5 + (idx * 0.1) }}
+                    className={`h-full rounded-full relative ${
+                      gap.priority === 'Critical' ? 'bg-gradient-to-r from-red-600 to-red-400' :
+                      gap.priority === 'Important' ? 'bg-gradient-to-r from-orange-600 to-orange-400' :
+                      'bg-gradient-to-r from-blue-600 to-blue-400'
+                    }`}
+                  >
+                    {/* Glowing Leading Edge */}
+                    <div className="absolute top-0 right-0 bottom-0 w-4 bg-white/40 blur-[2px] rounded-full"></div>
+                  </motion.div>
+                </div>
               </motion.div>
             ))}
           </div>
-        </SpotlightTiltCard>
+        </motion.div>
       </div>
     </div>
   );

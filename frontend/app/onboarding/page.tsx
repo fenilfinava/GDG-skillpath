@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Target, Clock, Calendar, ArrowRight, CheckCircle2 } from 'lucide-react';
-import { roles } from '@/lib/mock-data';
+import { roles } from '@/lib/constants';
 import { cn } from '@/lib/utils';
 import { SpotlightTiltCard } from '@/components/ui/SpotlightTiltCard';
 
