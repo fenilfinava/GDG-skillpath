@@ -1,4 +1,5 @@
 "use client";
+import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { LayoutDashboard, FileText, Target, Map, Video, Settings, BookOpen, BrainCircuit } from 'lucide-react';
@@ -16,6 +17,7 @@ const navItems = [
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   return (
     <motion.aside 
@@ -23,6 +25,7 @@ export default function Sidebar() {
       animate={{ x: 0, opacity: 1 }}
       transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
       className="w-[280px] h-[calc(100vh-32px)] fixed left-4 top-4 z-50 flex flex-col bg-[#0A0D14]/80 backdrop-blur-3xl border border-white/[0.05] rounded-[24px] shadow-[0_0_40px_rgba(0,0,0,0.5)] overflow-hidden"
+      onMouseLeave={() => setHoveredIndex(null)}
     >
       {/* Glossy top highlight */}
       <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
@@ -45,7 +48,7 @@ export default function Sidebar() {
       </div>
 
       <nav className="flex-1 px-4 flex flex-col gap-1 relative z-10 overflow-y-auto custom-scrollbar">
-        {navItems.map((item) => {
+        {navItems.map((item, index) => {
           const Icon = item.icon;
           const isActive = pathname === item.href || pathname?.startsWith(`${item.href}/`);
           
@@ -53,23 +56,31 @@ export default function Sidebar() {
             <Link 
               key={item.href}
               href={item.href}
+              onMouseEnter={() => setHoveredIndex(index)}
               className={cn(
                 "relative flex items-center gap-3.5 px-4 py-3.5 rounded-2xl text-[14px] font-semibold transition-all duration-300 group",
-                isActive ? "text-white" : "text-slate-400 hover:text-white hover:bg-white/[0.02]"
+                isActive ? "text-white" : "text-slate-400 hover:text-white"
               )}
             >
               {isActive && (
                 <motion.div
                   layoutId="activeTab"
-                  className="absolute inset-0 bg-white/[0.06] border border-white/[0.05] rounded-2xl"
+                  className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-purple-500/5 border border-blue-500/20 rounded-2xl"
                   transition={{ type: "spring", stiffness: 300, damping: 25 }}
+                />
+              )}
+              {hoveredIndex === index && !isActive && (
+                <motion.div
+                  layoutId="hoverTab"
+                  className="absolute inset-0 bg-white/[0.03] border border-white/[0.02] rounded-2xl"
+                  transition={{ type: "spring", stiffness: 350, damping: 30 }}
                 />
               )}
               {/* Custom active indicator line */}
               {isActive && (
                  <motion.div
                   layoutId="activeIndicator"
-                  className="absolute left-0 top-[20%] bottom-[20%] w-[3px] bg-blue-500 rounded-r-full shadow-[0_0_10px_rgba(59,130,246,0.8)]"
+                  className="absolute left-0 top-[25%] bottom-[25%] w-[3px] bg-blue-500 rounded-r-full shadow-[0_0_10px_rgba(59,130,246,0.8)]"
                   transition={{ type: "spring", stiffness: 300, damping: 25 }}
                  />
               )}

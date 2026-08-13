@@ -1,6 +1,7 @@
 import Sidebar from '@/components/layout/Sidebar';
 import Navbar from '@/components/layout/Navbar';
 import DashboardBackground from '@/components/layout/DashboardBackground';
+import { AIAssistantWidget } from '@/components/ui/AIAssistantWidget';
 
 export default function DashboardLayout({ children }) {
   return (
@@ -18,6 +19,7 @@ export default function DashboardLayout({ children }) {
           </div>
         </main>
       </div>
+      <AIAssistantWidget />
     </div>
   );
 }

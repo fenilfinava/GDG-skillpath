@@ -5,6 +5,7 @@ import { Target, AlertTriangle, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { SpotlightTiltCard } from '@/components/ui/SpotlightTiltCard';
+import { GlowingProgressBar } from '@/components/ui/GlowingProgressBar';
 
 export default function SkillGapDashboard() {
   const chartData = skillGaps.map(gap => ({
@@ -81,26 +82,20 @@ export default function SkillGapDashboard() {
                   <span>Current: {gap.currentLevel}%</span>
                   <span>Target: {gap.targetLevel}%</span>
                 </div>
-                {/* Premium Animated Progress Bar */}
-                <div className="h-3 w-full bg-slate-800/80 rounded-full overflow-hidden relative shadow-inner">
-                  {/* Target Line */}
-                  <div className="absolute top-0 bottom-0 w-0.5 bg-white/50 z-10" style={{ left: `${gap.targetLevel}%` }}></div>
-                  
-                  {/* Animated Fill Track */}
-                  <motion.div 
-                    initial={{ width: 0 }}
-                    animate={{ width: `${gap.currentLevel}%` }}
-                    transition={{ duration: 1.5, ease: "easeOut", delay: 0.5 + (idx * 0.1) }}
-                    className={`h-full rounded-full relative ${
-                      gap.priority === 'Critical' ? 'bg-gradient-to-r from-red-600 to-red-400' :
-                      gap.priority === 'Important' ? 'bg-gradient-to-r from-orange-600 to-orange-400' :
-                      'bg-gradient-to-r from-blue-600 to-blue-400'
-                    }`}
-                  >
-                    {/* Glowing Leading Edge */}
-                    <div className="absolute top-0 right-0 bottom-0 w-4 bg-white/40 blur-[2px] rounded-full"></div>
-                  </motion.div>
-                </div>
+                <GlowingProgressBar 
+                  value={gap.currentLevel} 
+                  targetValue={gap.targetLevel}
+                  glowColor={
+                    gap.priority === 'Critical' ? 'rgba(239, 68, 68, 0.4)' :
+                    gap.priority === 'Important' ? 'rgba(249, 115, 22, 0.4)' :
+                    'rgba(59, 130, 246, 0.4)'
+                  }
+                  barClassName={
+                    gap.priority === 'Critical' ? 'bg-gradient-to-r from-red-600 to-red-400' :
+                    gap.priority === 'Important' ? 'bg-gradient-to-r from-orange-600 to-orange-400' :
+                    'bg-gradient-to-r from-blue-600 to-blue-400'
+                  }
+                />
               </motion.div>
             ))}
           </div>

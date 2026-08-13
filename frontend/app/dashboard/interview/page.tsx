@@ -4,6 +4,8 @@ import { useState } from 'react';
 import { Mic, MessageSquare, Code, Play, ShieldAlert } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
+import { SpotlightTiltCard } from '@/components/ui/SpotlightTiltCard';
+import { GlowingProgressBar } from '@/components/ui/GlowingProgressBar';
 
 export default function InterviewPrepHub() {
   const [activeTab, setActiveTab] = useState('Technical');
@@ -25,47 +27,68 @@ export default function InterviewPrepHub() {
         </button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="bg-[#030712]/50 backdrop-blur-xl border border-white/10 p-8 rounded-3xl shadow-xl hover:shadow-[0_0_25px_rgba(59,130,246,0.1)] transition-all group relative overflow-hidden">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10 text-left">
+        <SpotlightTiltCard 
+          spotlightColor="rgba(59, 130, 246, 0.15)"
+          initial={{ opacity: 0, y: 20 }} 
+          animate={{ opacity: 1, y: 0 }} 
+          transition={{ delay: 0.1 }} 
+          className="bg-[#030712]/50 backdrop-blur-xl border border-white/10 p-8 rounded-3xl shadow-xl flex flex-col justify-between"
+        >
           <div className="absolute -top-24 -right-24 w-48 h-48 bg-purple-500/10 rounded-full blur-[80px] group-hover:bg-purple-500/20 transition-colors duration-700 pointer-events-none"></div>
-            <div className="absolute inset-0 bg-grid pointer-events-none opacity-20 group-hover:opacity-50 transition-opacity duration-700"></div>
-          <div className="w-14 h-14 bg-blue-500/10 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-blue-500/20 transition-colors border border-blue-500/20 relative z-10">
-            <Code className="w-7 h-7 text-blue-400" />
-          </div>
-          <h3 className="text-2xl font-bold text-white mb-2 tracking-tight relative z-10">DSA Tracker</h3>
-          <p className="text-slate-400 text-sm mb-6 font-medium relative z-10">You've solved 45/150 recommended problems.</p>
-          <div className="h-2.5 w-full bg-slate-800/80 rounded-full overflow-hidden shadow-inner relative z-10">
-            <div className="absolute inset-0 bg-blue-500 rounded-full" style={{ width: '30%' }}>
-              <div className="absolute top-0 right-0 bottom-0 w-3 bg-white/30 blur-[2px] rounded-full"></div>
+          <div className="absolute inset-0 bg-grid pointer-events-none opacity-20 group-hover:opacity-50 transition-opacity duration-700"></div>
+          
+          <div>
+            <div className="w-14 h-14 bg-blue-500/10 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-blue-500/20 transition-colors border border-blue-500/20 relative z-10">
+              <Code className="w-7 h-7 text-blue-400" />
             </div>
+            <h3 className="text-2xl font-bold text-white mb-2 tracking-tight relative z-10">DSA Tracker</h3>
+            <p className="text-slate-400 text-sm mb-6 font-medium relative z-10">You've solved 45/150 recommended problems.</p>
           </div>
-        </motion.div>
+          
+          <GlowingProgressBar value={30} glowColor="rgba(59, 130, 246, 0.3)" />
+        </SpotlightTiltCard>
 
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="bg-[#030712]/50 backdrop-blur-xl border border-white/10 p-8 rounded-3xl shadow-xl hover:shadow-[0_0_25px_rgba(56,189,248,0.1)] transition-all group relative overflow-hidden">
+        <SpotlightTiltCard 
+          spotlightColor="rgba(14, 165, 233, 0.15)"
+          initial={{ opacity: 0, y: 20 }} 
+          animate={{ opacity: 1, y: 0 }} 
+          transition={{ delay: 0.2 }} 
+          className="bg-[#030712]/50 backdrop-blur-xl border border-white/10 p-8 rounded-3xl shadow-xl flex flex-col justify-between"
+        >
           <div className="absolute -top-24 -right-24 w-48 h-48 bg-purple-500/10 rounded-full blur-[80px] group-hover:bg-purple-500/20 transition-colors duration-700 pointer-events-none"></div>
-            <div className="absolute inset-0 bg-grid pointer-events-none opacity-20 group-hover:opacity-50 transition-opacity duration-700"></div>
-          <div className="w-14 h-14 bg-sky-500/10 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-sky-500/20 transition-colors border border-sky-500/20 relative z-10">
-            <MessageSquare className="w-7 h-7 text-sky-400" />
-          </div>
-          <h3 className="text-2xl font-bold text-white mb-2 tracking-tight relative z-10">Text Interviews</h3>
-          <p className="text-slate-400 text-sm mb-6 font-medium relative z-10">Avg. Score: 78/100 across 3 sessions.</p>
-          <div className="h-2.5 w-full bg-slate-800/80 rounded-full overflow-hidden shadow-inner relative z-10">
-            <div className="absolute inset-0 bg-sky-500 rounded-full" style={{ width: '78%' }}>
-              <div className="absolute top-0 right-0 bottom-0 w-3 bg-white/30 blur-[2px] rounded-full"></div>
+          <div className="absolute inset-0 bg-grid pointer-events-none opacity-20 group-hover:opacity-50 transition-opacity duration-700"></div>
+          
+          <div>
+            <div className="w-14 h-14 bg-sky-500/10 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-sky-500/20 transition-colors border border-sky-500/20 relative z-10">
+              <MessageSquare className="w-7 h-7 text-sky-400" />
             </div>
+            <h3 className="text-2xl font-bold text-white mb-2 tracking-tight relative z-10">Text Interviews</h3>
+            <p className="text-slate-400 text-sm mb-6 font-medium relative z-10">Avg. Score: 78/100 across 3 sessions.</p>
           </div>
-        </motion.div>
+          
+          <GlowingProgressBar value={78} glowColor="rgba(14, 165, 233, 0.3)" barClassName="bg-gradient-to-r from-sky-500 to-cyan-400" />
+        </SpotlightTiltCard>
 
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="bg-[#030712]/50 backdrop-blur-xl border border-white/5 p-8 rounded-3xl opacity-60 relative overflow-hidden group transition-opacity">
-          <div className="absolute -top-24 -right-24 w-48 h-48 bg-purple-500/10 rounded-full blur-[80px] group-hover:bg-purple-500/20 transition-colors duration-700 pointer-events-none"></div>
-            <div className="absolute inset-0 bg-grid pointer-events-none opacity-20 group-hover:opacity-50 transition-opacity duration-700"></div>
+        <SpotlightTiltCard 
+          spotlightColor="rgba(148, 163, 184, 0.05)"
+          initial={{ opacity: 0, y: 20 }} 
+          animate={{ opacity: 1, y: 0 }} 
+          transition={{ delay: 0.3 }} 
+          className="bg-[#030712]/30 border border-white/5 p-8 rounded-3xl opacity-60 flex flex-col justify-between"
+        >
+          <div className="absolute inset-0 bg-grid pointer-events-none opacity-10"></div>
           <div className="absolute top-4 right-4 px-3 py-1.5 bg-slate-800 text-xs font-bold text-slate-400 rounded-lg border border-slate-700 tracking-wide uppercase">Coming Phase 3</div>
-          <div className="w-14 h-14 bg-slate-800/50 rounded-2xl flex items-center justify-center mb-6 border border-slate-700 relative z-10">
-            <Mic className="w-7 h-7 text-slate-400" />
+          
+          <div>
+            <div className="w-14 h-14 bg-slate-800/50 rounded-2xl flex items-center justify-center mb-6 border border-slate-700 relative z-10">
+              <Mic className="w-7 h-7 text-slate-400" />
+            </div>
+            <h3 className="text-2xl font-bold text-slate-300 mb-2 tracking-tight relative z-10">Voice Interviews</h3>
+            <p className="text-slate-500 text-sm font-medium relative z-10">Real-time voice-based AI interviewer.</p>
           </div>
-          <h3 className="text-2xl font-bold text-slate-300 mb-2 tracking-tight relative z-10">Voice Interviews</h3>
-          <p className="text-slate-500 text-sm font-medium relative z-10">Real-time voice-based AI interviewer.</p>
-        </motion.div>
+          <div className="h-2.5 w-full bg-slate-900/50 rounded-full border border-white/5 opacity-30" />
+        </SpotlightTiltCard>
       </div>
 
       <div className="bg-[#030712]/50 backdrop-blur-xl border border-white/10 rounded-3xl overflow-hidden shadow-2xl relative">

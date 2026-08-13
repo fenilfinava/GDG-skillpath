@@ -12,10 +12,10 @@ export default function RoadmapView() {
 
   const getTaskIcon = (type: string) => {
     switch(type) {
-      case 'course': return <Video className="w-4 h-4" />;
-      case 'project': return <Code className="w-4 h-4" />;
-      case 'practice': return <BookOpen className="w-4 h-4" />;
-      default: return <BookOpen className="w-4 h-4" />;
+      case 'course': return <Video className="w-4 h-4 transition-transform duration-500 group-hover:scale-125 group-hover:rotate-12 text-blue-400" />;
+      case 'project': return <Code className="w-4 h-4 transition-transform duration-500 group-hover:scale-125 group-hover:-rotate-12 text-purple-400" />;
+      case 'practice': return <BookOpen className="w-4 h-4 transition-transform duration-500 group-hover:scale-125 group-hover:translate-y-[-2px] text-cyan-400" />;
+      default: return <BookOpen className="w-4 h-4 text-slate-400" />;
     }
   };
 
