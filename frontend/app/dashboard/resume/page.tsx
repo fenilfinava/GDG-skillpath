@@ -114,7 +114,8 @@ export default function ResumeUpload() {
           </div>
           
           <div className="bg-[#030712]/60 backdrop-blur-xl border border-white/10 p-8 rounded-3xl shadow-2xl relative overflow-hidden">
-            <div className="absolute inset-0 bg-grid opacity-[0.04] pointer-events-none"></div>
+            <div className="absolute -top-24 -right-24 w-48 h-48 bg-purple-500/10 rounded-full blur-[80px] group-hover:bg-purple-500/20 transition-colors duration-700 pointer-events-none"></div>
+            <div className="absolute inset-0 bg-grid pointer-events-none opacity-20 group-hover:opacity-50 transition-opacity duration-700"></div>
             <h3 className="text-xl font-bold text-white mb-6 flex items-center gap-3 relative z-10">
               <Brain className="w-6 h-6 text-purple-400" /> Extracted Skills
             </h3>

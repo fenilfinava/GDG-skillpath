@@ -294,7 +294,12 @@ if __name__ == "__main__":
             }
           >
             {/* EXACT COPIED UI CONTENT inside Scroll Card */}
-            <div className="w-full h-full bg-[#0d1117] relative">
+            <motion.div 
+              initial={{ opacity: 0, y: 100, scale: 0.9 }} 
+              animate={{ opacity: 1, y: 0, scale: 1 }} 
+              transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1], delay: 0.8 }}
+              className="w-full h-full bg-[#0d1117] relative"
+            >
                 {/* Window Controls */}
                 <div className="flex items-center justify-between border-b border-white/5 bg-[#010409] px-4 py-3 h-[50px]">
                     <div className="flex gap-2">
@@ -358,7 +363,7 @@ if __name__ == "__main__":
                         </div>
                     </div>
                 </div>
-            </div>
+            </motion.div>
           </ContainerScroll>
         </div>
 

@@ -36,7 +36,8 @@ export default function SettingsPage() {
         {/* Settings Content */}
         <div className="col-span-1 md:col-span-3 space-y-8">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="bg-[#030712]/50 backdrop-blur-xl border border-white/10 rounded-3xl p-10 shadow-2xl relative overflow-hidden">
-            <div className="absolute inset-0 bg-grid opacity-[0.04] pointer-events-none"></div>
+            <div className="absolute -top-24 -right-24 w-48 h-48 bg-purple-500/10 rounded-full blur-[80px] group-hover:bg-purple-500/20 transition-colors duration-700 pointer-events-none"></div>
+            <div className="absolute inset-0 bg-grid pointer-events-none opacity-20 group-hover:opacity-50 transition-opacity duration-700"></div>
             <h3 className="text-2xl font-bold text-white mb-8 tracking-tight relative z-10">Profile Information</h3>
             
             <div className="flex items-center gap-6 mb-10 relative z-10">
@@ -71,7 +72,8 @@ export default function SettingsPage() {
           </motion.div>
 
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="bg-[#030712]/50 backdrop-blur-xl border border-white/10 rounded-3xl p-10 shadow-2xl relative overflow-hidden">
-            <div className="absolute inset-0 bg-grid opacity-[0.04] pointer-events-none"></div>
+            <div className="absolute -top-24 -right-24 w-48 h-48 bg-purple-500/10 rounded-full blur-[80px] group-hover:bg-purple-500/20 transition-colors duration-700 pointer-events-none"></div>
+            <div className="absolute inset-0 bg-grid pointer-events-none opacity-20 group-hover:opacity-50 transition-opacity duration-700"></div>
             <h3 className="text-2xl font-bold text-white mb-8 tracking-tight relative z-10">Learning Preferences</h3>
             
             <div className="space-y-8 relative z-10">
@@ -114,7 +116,8 @@ export default function SettingsPage() {
           </motion.div>
 
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="bg-[#030712]/50 backdrop-blur-xl border border-red-500/20 rounded-3xl p-10 shadow-2xl group hover:border-red-500/40 transition-colors relative overflow-hidden">
-            <div className="absolute inset-0 bg-grid opacity-[0.04] pointer-events-none"></div>
+            <div className="absolute -top-24 -right-24 w-48 h-48 bg-purple-500/10 rounded-full blur-[80px] group-hover:bg-purple-500/20 transition-colors duration-700 pointer-events-none"></div>
+            <div className="absolute inset-0 bg-grid pointer-events-none opacity-20 group-hover:opacity-50 transition-opacity duration-700"></div>
             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-red-500/0 via-red-500/50 to-red-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
             
             <h3 className="text-2xl font-bold text-red-400 mb-3 tracking-tight flex items-center gap-2 relative z-10"><Shield className="w-6 h-6"/> Danger Zone</h3>

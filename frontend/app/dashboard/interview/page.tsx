@@ -27,7 +27,8 @@ export default function InterviewPrepHub() {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="bg-[#030712]/50 backdrop-blur-xl border border-white/10 p-8 rounded-3xl shadow-xl hover:shadow-[0_0_25px_rgba(59,130,246,0.1)] transition-all group relative overflow-hidden">
-          <div className="absolute inset-0 bg-grid opacity-5 pointer-events-none"></div>
+          <div className="absolute -top-24 -right-24 w-48 h-48 bg-purple-500/10 rounded-full blur-[80px] group-hover:bg-purple-500/20 transition-colors duration-700 pointer-events-none"></div>
+            <div className="absolute inset-0 bg-grid pointer-events-none opacity-20 group-hover:opacity-50 transition-opacity duration-700"></div>
           <div className="w-14 h-14 bg-blue-500/10 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-blue-500/20 transition-colors border border-blue-500/20 relative z-10">
             <Code className="w-7 h-7 text-blue-400" />
           </div>
@@ -41,7 +42,8 @@ export default function InterviewPrepHub() {
         </motion.div>
 
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="bg-[#030712]/50 backdrop-blur-xl border border-white/10 p-8 rounded-3xl shadow-xl hover:shadow-[0_0_25px_rgba(56,189,248,0.1)] transition-all group relative overflow-hidden">
-          <div className="absolute inset-0 bg-grid opacity-5 pointer-events-none"></div>
+          <div className="absolute -top-24 -right-24 w-48 h-48 bg-purple-500/10 rounded-full blur-[80px] group-hover:bg-purple-500/20 transition-colors duration-700 pointer-events-none"></div>
+            <div className="absolute inset-0 bg-grid pointer-events-none opacity-20 group-hover:opacity-50 transition-opacity duration-700"></div>
           <div className="w-14 h-14 bg-sky-500/10 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-sky-500/20 transition-colors border border-sky-500/20 relative z-10">
             <MessageSquare className="w-7 h-7 text-sky-400" />
           </div>
@@ -55,7 +57,8 @@ export default function InterviewPrepHub() {
         </motion.div>
 
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="bg-[#030712]/50 backdrop-blur-xl border border-white/5 p-8 rounded-3xl opacity-60 relative overflow-hidden group transition-opacity">
-          <div className="absolute inset-0 bg-grid opacity-5 pointer-events-none"></div>
+          <div className="absolute -top-24 -right-24 w-48 h-48 bg-purple-500/10 rounded-full blur-[80px] group-hover:bg-purple-500/20 transition-colors duration-700 pointer-events-none"></div>
+            <div className="absolute inset-0 bg-grid pointer-events-none opacity-20 group-hover:opacity-50 transition-opacity duration-700"></div>
           <div className="absolute top-4 right-4 px-3 py-1.5 bg-slate-800 text-xs font-bold text-slate-400 rounded-lg border border-slate-700 tracking-wide uppercase">Coming Phase 3</div>
           <div className="w-14 h-14 bg-slate-800/50 rounded-2xl flex items-center justify-center mb-6 border border-slate-700 relative z-10">
             <Mic className="w-7 h-7 text-slate-400" />
@@ -66,7 +69,6 @@ export default function InterviewPrepHub() {
       </div>
 
       <div className="bg-[#030712]/50 backdrop-blur-xl border border-white/10 rounded-3xl overflow-hidden shadow-2xl relative">
-        <div className="absolute inset-0 bg-grid opacity-[0.03] pointer-events-none"></div>
         <div className="flex border-b border-white/5 bg-white/[0.02] relative z-10">
           {tabs.map(tab => (
             <button
@@ -106,9 +108,12 @@ export default function InterviewPrepHub() {
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: idx * 0.1 }}
                     key={q.id} 
-                    className="bg-white/5 border border-white/10 p-6 rounded-2xl hover:bg-white/10 hover:border-white/20 transition-all group"
+                    className="bg-white/5 border border-white/10 p-6 rounded-2xl hover:bg-white/10 hover:border-white/20 transition-all group relative overflow-hidden"
                   >
-                    <div className="flex justify-between items-start mb-4">
+                    <div className="absolute -top-24 -right-24 w-48 h-48 bg-blue-500/10 rounded-full blur-[80px] group-hover:bg-blue-500/20 transition-colors duration-700 pointer-events-none"></div>
+                    <div className="absolute inset-0 bg-grid pointer-events-none opacity-20 group-hover:opacity-50 transition-opacity duration-700"></div>
+                    <div className="relative z-10">
+                      <div className="flex justify-between items-start mb-4">
                       <span className="text-xs px-3 py-1 bg-white/10 text-slate-300 rounded-lg font-bold tracking-wider uppercase border border-white/5">{q.topic}</span>
                       <span className={cn(
                         "text-xs px-3 py-1 rounded-lg font-bold border tracking-wider uppercase shadow-sm",
@@ -123,6 +128,7 @@ export default function InterviewPrepHub() {
                     <div className="flex justify-end gap-3">
                       <button className="text-sm font-bold text-slate-400 hover:text-white px-5 py-2.5 rounded-xl border border-transparent hover:border-white/10 hover:bg-white/5 transition-all">View Answer</button>
                       <button className="text-sm font-bold bg-white/10 border border-white/10 hover:bg-white/20 text-white px-6 py-2.5 rounded-xl transition-all shadow-md group-hover:shadow-lg">Practice</button>
+                    </div>
                     </div>
                   </motion.div>
                 ))}

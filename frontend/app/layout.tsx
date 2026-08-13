@@ -1,4 +1,5 @@
 import './globals.css'
+import ScrollToTop from '@/components/ScrollToTop'
 
 export const metadata = {
   title: 'SkillPath | AI Career & Learning Platform',
@@ -17,6 +18,7 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
       </head>
       <body className={`font-sans bg-slate-900 text-slate-100 min-h-screen selection:bg-blue-500/30 selection:text-blue-200`}>
+        <ScrollToTop />
         {children}
       </body>
     </html>

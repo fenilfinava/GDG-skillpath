@@ -23,7 +23,8 @@ export default function ProgressDashboard() {
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
         <div className="glass-card p-6 flex items-center gap-4 relative overflow-hidden group">
-          <div className="absolute inset-0 bg-grid opacity-[0.04] pointer-events-none"></div>
+          <div className="absolute -top-24 -right-24 w-48 h-48 bg-purple-500/10 rounded-full blur-[80px] group-hover:bg-purple-500/20 transition-colors duration-700 pointer-events-none"></div>
+            <div className="absolute inset-0 bg-grid pointer-events-none opacity-20 group-hover:opacity-50 transition-opacity duration-700"></div>
           <div className="relative z-10 w-12 h-12 rounded-full bg-orange-500/20 flex items-center justify-center">
             <Flame className="w-6 h-6 text-orange-400" />
           </div>
@@ -34,7 +35,8 @@ export default function ProgressDashboard() {
         </div>
 
         <div className="glass-card p-6 flex items-center gap-4 relative overflow-hidden group">
-          <div className="absolute inset-0 bg-grid opacity-[0.04] pointer-events-none"></div>
+          <div className="absolute -top-24 -right-24 w-48 h-48 bg-purple-500/10 rounded-full blur-[80px] group-hover:bg-purple-500/20 transition-colors duration-700 pointer-events-none"></div>
+            <div className="absolute inset-0 bg-grid pointer-events-none opacity-20 group-hover:opacity-50 transition-opacity duration-700"></div>
           <div className="relative z-10 w-12 h-12 rounded-full bg-blue-500/20 flex items-center justify-center">
             <Clock className="w-6 h-6 text-blue-400" />
           </div>
@@ -45,7 +47,8 @@ export default function ProgressDashboard() {
         </div>
 
         <div className="glass-card p-6 flex items-center gap-4 relative overflow-hidden group">
-          <div className="absolute inset-0 bg-grid opacity-[0.04] pointer-events-none"></div>
+          <div className="absolute -top-24 -right-24 w-48 h-48 bg-purple-500/10 rounded-full blur-[80px] group-hover:bg-purple-500/20 transition-colors duration-700 pointer-events-none"></div>
+            <div className="absolute inset-0 bg-grid pointer-events-none opacity-20 group-hover:opacity-50 transition-opacity duration-700"></div>
           <div className="relative z-10 w-12 h-12 rounded-full bg-green-500/20 flex items-center justify-center">
             <CheckCircle className="w-6 h-6 text-green-400" />
           </div>
@@ -56,7 +59,8 @@ export default function ProgressDashboard() {
         </div>
 
         <div className="glass-card p-6 flex items-center gap-4 relative overflow-hidden group">
-          <div className="absolute inset-0 bg-grid opacity-[0.04] pointer-events-none"></div>
+          <div className="absolute -top-24 -right-24 w-48 h-48 bg-purple-500/10 rounded-full blur-[80px] group-hover:bg-purple-500/20 transition-colors duration-700 pointer-events-none"></div>
+            <div className="absolute inset-0 bg-grid pointer-events-none opacity-20 group-hover:opacity-50 transition-opacity duration-700"></div>
           <div className="relative z-10 w-12 h-12 rounded-full bg-purple-500/20 flex items-center justify-center">
             <Award className="w-6 h-6 text-purple-400" />
           </div>
@@ -69,7 +73,8 @@ export default function ProgressDashboard() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="glass-card p-6 col-span-1 lg:col-span-2 relative overflow-hidden group">
-          <div className="absolute inset-0 bg-grid opacity-[0.04] pointer-events-none"></div>
+          <div className="absolute -top-24 -right-24 w-48 h-48 bg-purple-500/10 rounded-full blur-[80px] group-hover:bg-purple-500/20 transition-colors duration-700 pointer-events-none"></div>
+            <div className="absolute inset-0 bg-grid pointer-events-none opacity-20 group-hover:opacity-50 transition-opacity duration-700"></div>
           <h3 className="relative z-10 text-lg font-semibold text-white mb-6">Learning Activity (Last 7 Days)</h3>
           <div className="relative z-10 h-[300px] w-full -ml-4">
             <ResponsiveContainer width="100%" height="100%">
@@ -94,7 +99,8 @@ export default function ProgressDashboard() {
         </div>
 
         <div className="glass-card p-6 relative overflow-hidden group">
-          <div className="absolute inset-0 bg-grid opacity-[0.04] pointer-events-none"></div>
+          <div className="absolute -top-24 -right-24 w-48 h-48 bg-purple-500/10 rounded-full blur-[80px] group-hover:bg-purple-500/20 transition-colors duration-700 pointer-events-none"></div>
+            <div className="absolute inset-0 bg-grid pointer-events-none opacity-20 group-hover:opacity-50 transition-opacity duration-700"></div>
           <h3 className="relative z-10 text-lg font-semibold text-white mb-6">Recent Milestones</h3>
           <div className="relative z-10 space-y-6">
             

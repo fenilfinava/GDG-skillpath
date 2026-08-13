@@ -26,7 +26,7 @@ export default function OnboardingWizard() {
         <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 brightness-100 contrast-150"></div>
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-600/20 rounded-full blur-[120px] mix-blend-screen pointer-events-none"></div>
         <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-600/20 rounded-full blur-[120px] mix-blend-screen pointer-events-none"></div>
-        <div className="absolute inset-0 bg-grid opacity-5 pointer-events-none"></div>
+        <div className="absolute inset-0 bg-grid pointer-events-none opacity-20 group-hover:opacity-50 transition-opacity duration-700"></div>
       </div>
       
       <div className="glass-card w-full max-w-2xl p-8 relative z-10 shadow-2xl">
@@ -89,17 +89,19 @@ export default function OnboardingWizard() {
               </div>
               
               <div className="space-y-6 bg-white/5 border border-white/5 p-8 rounded-2xl">
-                <div>
-                  <label className="block text-sm font-bold text-slate-400 mb-6 uppercase tracking-wider">Hours per week</label>
-                  <input 
-                    type="range" 
-                    min="2" max="40" step="2"
-                    value={formData.hours}
-                    onChange={(e) => setFormData({ ...formData, hours: e.target.value })}
-                    className="w-full h-2 bg-[#030712] border border-white/10 rounded-lg appearance-none cursor-pointer accent-purple-500"
-                  />
-                  <div className="mt-8 text-center text-4xl font-black text-white drop-shadow-[0_0_15px_rgba(168,85,247,0.4)]">
-                    {formData.hours} <span className="text-lg font-bold text-slate-500 tracking-normal uppercase">hrs/week</span>
+                <div className="flex flex-col items-center">
+                  <label className="block text-sm font-bold text-slate-400 mb-6 uppercase tracking-wider text-center">Hours per week</label>
+                  <div className="relative flex items-center justify-center w-48">
+                    <input 
+                      type="number" 
+                      min="1" max="100"
+                      value={formData.hours}
+                      onChange={(e) => setFormData({ ...formData, hours: e.target.value })}
+                      className="w-full bg-[#030712] border-2 border-purple-500/30 rounded-2xl py-4 px-6 text-4xl font-black text-white text-center focus:outline-none focus:border-purple-500 shadow-[0_0_20px_rgba(168,85,247,0.15)] focus:shadow-[0_0_30px_rgba(168,85,247,0.3)] transition-all"
+                    />
+                  </div>
+                  <div className="mt-4 text-center">
+                    <span className="text-sm font-bold text-slate-500 tracking-wider uppercase">hrs/week</span>
                   </div>
                 </div>
               </div>

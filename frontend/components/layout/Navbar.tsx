@@ -1,14 +1,31 @@
 "use client";
+import { useState } from 'react';
 import { Bell, Search, Command } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, useScroll, useMotionValueEvent } from 'framer-motion';
 
 export default function Navbar({ title }) {
+  const { scrollY } = useScroll();
+  const [hidden, setHidden] = useState(false);
+
+  useMotionValueEvent(scrollY, "change", (latest) => {
+    const previous = scrollY.getPrevious();
+    if (latest > previous && latest > 150) {
+      setHidden(true);
+    } else {
+      setHidden(false);
+    }
+  });
+
   return (
     <motion.header 
+      variants={{
+        visible: { y: 0, opacity: 1 },
+        hidden: { y: "-100%", opacity: 0 }
+      }}
       initial={{ y: -20, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
-      className="h-28 flex items-center justify-between px-8 bg-transparent sticky top-0 z-40"
+      animate={hidden ? "hidden" : "visible"}
+      transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+      className="h-28 flex items-center justify-between px-8 bg-[#030712]/70 backdrop-blur-xl sticky top-0 z-40 border-b border-white/5 shadow-xl"
     >
       <div className="flex flex-col">
         <h1 className="text-2xl font-black tracking-tight text-white mb-1">{title}</h1>

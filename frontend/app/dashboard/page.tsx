@@ -49,7 +49,7 @@ export default function DashboardOverview() {
         {/* ──────────────── NEXT UP (Main Hero Card) ──────────────── */}
         <motion.div variants={itemVariants} className="md:col-span-2">
           <div className="h-full bg-[#030712]/60 backdrop-blur-xl border border-white/10 hover:border-white/20 rounded-[2rem] p-8 relative overflow-hidden group transition-all duration-500 shadow-2xl flex flex-col justify-between">
-            <div className="absolute inset-0 bg-grid opacity-[0.03] pointer-events-none transition-opacity group-hover:opacity-[0.06]"></div>
+            <div className="absolute inset-0 bg-grid pointer-events-none opacity-20 group-hover:opacity-50 transition-opacity duration-700"></div>
             <div className="absolute -bottom-32 -right-32 w-80 h-80 bg-blue-600/20 rounded-full blur-[100px] pointer-events-none group-hover:bg-blue-600/30 transition-colors duration-700"></div>
             
             <div className="relative z-10 flex items-start justify-between mb-8">
@@ -84,7 +84,7 @@ export default function DashboardOverview() {
         {/* ──────────────── READINESS SCORE ──────────────── */}
         <motion.div variants={itemVariants} className="md:col-span-1">
           <div className="h-full bg-[#030712]/60 backdrop-blur-xl border border-white/10 hover:border-white/20 rounded-[2rem] p-8 relative overflow-hidden group transition-all duration-500 shadow-2xl flex flex-col items-center justify-center text-center">
-            <div className="absolute inset-0 bg-grid opacity-[0.03] pointer-events-none"></div>
+            <div className="absolute inset-0 bg-grid pointer-events-none opacity-20 group-hover:opacity-50 transition-opacity duration-700"></div>
             <div className="absolute -top-24 -left-24 w-64 h-64 bg-purple-600/10 rounded-full blur-[80px] pointer-events-none group-hover:bg-purple-600/20 transition-colors duration-700"></div>
             
             <div className="relative z-10 w-full flex flex-col items-center">
@@ -143,7 +143,7 @@ export default function DashboardOverview() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {skillGaps.slice(0, 4).map((skill, i) => (
             <motion.div variants={itemVariants} key={skill.id} className="bg-[#030712]/40 backdrop-blur-md border border-white/10 hover:border-white/20 p-6 rounded-[1.5rem] group transition-all duration-300 relative overflow-hidden shadow-xl hover:-translate-y-1">
-              <div className="absolute inset-0 bg-grid opacity-[0.02] pointer-events-none"></div>
+              <div className="absolute inset-0 bg-grid pointer-events-none opacity-20 group-hover:opacity-50 transition-opacity duration-700"></div>
               
               <div className="relative z-10">
                 <div className="flex justify-between items-start mb-6">
