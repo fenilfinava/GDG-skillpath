@@ -4,6 +4,7 @@ import { Mic, MessageSquare, Code, Play, ShieldAlert, FileText } from 'lucide-re
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import InterviewModal from '@/components/InterviewModal';
+import VoiceInterviewModal from '@/components/VoiceInterviewModal';
 import { useResume } from '@/lib/ResumeContext';
 import Link from 'next/link';
 
@@ -11,6 +12,7 @@ export default function InterviewPrepHub() {
   const { targetRole, summary, hasData, interviewScore } = useResume();
   const [activeTab, setActiveTab] = useState('Technical');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isVoiceModalOpen, setIsVoiceModalOpen] = useState(false);
   const tabs = ['Technical', 'Behavioral', 'System Design'];
 
   // Empty state: no resume uploaded yet
@@ -36,12 +38,20 @@ export default function InterviewPrepHub() {
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">Interview Prep Hub</h2>
           <p className="text-slate-400 text-lg">Practice role-specific questions and take AI mock interviews.</p>
         </div>
-        <button 
-          onClick={() => setIsModalOpen(true)}
-          className="bg-blue-600 hover:bg-blue-500 text-white px-8 py-3 rounded-xl font-bold transition-all flex items-center gap-2 shadow-[0_0_20px_rgba(37,99,235,0.4)] hover:shadow-[0_0_30px_rgba(37,99,235,0.6)] transform hover:scale-[1.02]"
-        >
-          <Play className="w-5 h-5 fill-current" /> Start AI Mock Interview
-        </button>
+        <div className="flex items-center gap-3">
+          <button 
+            onClick={() => setIsVoiceModalOpen(true)}
+            className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white px-6 py-3 rounded-xl font-bold transition-all flex items-center gap-2 shadow-[0_0_20px_rgba(124,58,237,0.4)] hover:shadow-[0_0_30px_rgba(124,58,237,0.6)] transform hover:scale-[1.02]"
+          >
+            <Mic className="w-5 h-5 text-white animate-pulse" /> Voice Interview
+          </button>
+          <button 
+            onClick={() => setIsModalOpen(true)}
+            className="bg-blue-600 hover:bg-blue-500 text-white px-6 py-3 rounded-xl font-bold transition-all flex items-center gap-2 shadow-[0_0_20px_rgba(37,99,235,0.4)] hover:shadow-[0_0_30px_rgba(37,99,235,0.6)] transform hover:scale-[1.02]"
+          >
+            <Play className="w-5 h-5 fill-current" /> AI Mock Interview
+          </button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
@@ -73,14 +83,22 @@ export default function InterviewPrepHub() {
           </div>
         </motion.div>
 
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="bg-[#030712]/50 backdrop-blur-xl border border-white/5 p-8 rounded-3xl opacity-60 relative overflow-hidden group transition-opacity">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }} 
+          animate={{ opacity: 1, y: 0 }} 
+          transition={{ delay: 0.3 }} 
+          onClick={() => setIsVoiceModalOpen(true)}
+          className="bg-[#030712]/50 backdrop-blur-xl border border-purple-500/30 hover:border-purple-500/60 p-8 rounded-3xl cursor-pointer relative overflow-hidden group shadow-xl hover:shadow-[0_0_30px_rgba(168,85,247,0.25)] transition-all transform hover:-translate-y-1"
+        >
           <div className="absolute inset-0 bg-grid opacity-5 pointer-events-none"></div>
-          <div className="absolute top-4 right-4 px-3 py-1.5 bg-slate-800 text-xs font-bold text-slate-400 rounded-lg border border-slate-700 tracking-wide uppercase">Coming Phase 3</div>
-          <div className="w-14 h-14 bg-slate-800/50 rounded-2xl flex items-center justify-center mb-6 border border-slate-700 relative z-10">
-            <Mic className="w-7 h-7 text-slate-400" />
+          <div className="absolute top-4 right-4 px-3 py-1.5 bg-purple-500/20 text-xs font-bold text-purple-300 rounded-lg border border-purple-500/30 tracking-wide uppercase flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-purple-400 animate-ping"></span> Live Voice
           </div>
-          <h3 className="text-2xl font-bold text-slate-300 mb-2 tracking-tight relative z-10">Voice Interviews</h3>
-          <p className="text-slate-500 text-sm font-medium relative z-10">Real-time voice-based AI interviewer.</p>
+          <div className="w-14 h-14 bg-purple-500/10 rounded-2xl flex items-center justify-center mb-6 border border-purple-500/30 group-hover:bg-purple-500/20 transition-colors relative z-10">
+            <Mic className="w-7 h-7 text-purple-400" />
+          </div>
+          <h3 className="text-2xl font-bold text-white mb-2 tracking-tight relative z-10">Voice Interviews</h3>
+          <p className="text-slate-400 text-sm font-medium relative z-10">Real-time voice-based AI interviewer defense.</p>
         </motion.div>
       </div>
 
@@ -114,20 +132,27 @@ export default function InterviewPrepHub() {
               className="text-center py-12"
             >
               <ShieldAlert className="w-16 h-16 mx-auto mb-4 opacity-30 text-blue-400" />
-              <p className="text-lg text-slate-500 mb-4">Click &quot;Start AI Mock Interview&quot; above to begin a live, resume-based interrogation.</p>
-              <p className="text-sm text-slate-600">The AI will aggressively grill you on your real projects based on your uploaded resume.</p>
+              <p className="text-lg text-slate-500 mb-4">Click &quot;Voice Interview&quot; or &quot;Start AI Mock Interview&quot; above to begin a live, resume-based interrogation.</p>
+              <p className="text-sm text-slate-600">The AI will aggressively grill you on your real projects and identified skill gaps based on your uploaded resume.</p>
             </motion.div>
           </AnimatePresence>
         </div>
       </div>
 
-      {/* AI Interview Simulator Modal */}
+      {/* AI Text Interview Simulator Modal */}
       <InterviewModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         targetRole={targetRole}
         resumeSummary={summary}
       />
+
+      {/* AI Voice Interview Modal */}
+      <VoiceInterviewModal
+        isOpen={isVoiceModalOpen}
+        onClose={() => setIsVoiceModalOpen(false)}
+      />
     </div>
   );
 }
+

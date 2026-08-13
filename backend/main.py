@@ -209,8 +209,8 @@ async def extract_skills(file: UploadFile = File(...)):
     prompt = f"Analyze the following resume text and extract structured data:\n\nRESUME TEXT:\n{pdf_text}"
 
     try:
-        response = client.models.generate_content(
-            model="gemini-3.5-flash-lite",
+        response = await client.aio.models.generate_content(
+            model="gemini-3.6-flash",
             contents=prompt,
             config=types.GenerateContentConfig(
                 system_instruction=system_instruction,
@@ -245,8 +245,8 @@ async def generate_roadmap(req: RoadmapRequest):
     """
 
     try:
-        response = client.models.generate_content(
-            model="gemini-3.5-flash-lite",
+        response = await client.aio.models.generate_content(
+            model="gemini-3.6-flash",
             contents=prompt,
             config=types.GenerateContentConfig(
                 response_mime_type="application/json",
@@ -259,33 +259,65 @@ async def generate_roadmap(req: RoadmapRequest):
         raise HTTPException(status_code=500, detail=f"Gemini API Error during roadmap generation: {str(e)}")
 
 
-@app.post("/api/interview", response_model=InterviewResponse)
-async def senior_staff_interrogation(req: InterviewRequest):
-    """
-    Multi-turn ruthless Senior Staff Engineer interview.
-    Converts frontend chat history into google-genai types.Content format
-    so the AI remembers and builds upon the entire conversation.
-    """
-    client = get_gemini_client()
+import json
+import os
+from openai import OpenAI
+from fastapi import HTTPException
 
-    # --- Dynamic System Instruction (adapts to any student's resume) ---
-    system_instruction = (
-        "You are a ruthless Senior Staff Engineer at a FAANG company conducting a "
-        "placement technical interview. Your goal is to aggressively interrogate the "
-        "candidate on the specific architecture and technical details provided in their resume.\n\n"
-        "Analyze their project details dynamically:\n"
-        "- If their project mentions a multi-tenant platform, grill them heavily on "
-        "database role isolation, Row Level Security, and data leakage.\n"
-        "- If their project mentions C++ or hardware/logic simulations, relentlessly "
-        "interrogate memory management, pointer safety, and virtual function overhead.\n"
-        "- For web or distributed systems, target single points of failure, caching, "
-        "latency, and scaling bottlenecks.\n\n"
-        "DO NOT ask generic behavioral questions. Base your questions strictly on their "
-        "previous responses and the technical vulnerabilities in their real projects.\n\n"
-        f"Candidate Target Role: {req.role}\n"
-        f"Interview Topic Focus: {req.topic}\n"
-        f"Candidate Real Project Details from Resume:\n{req.architectureDetails or 'No project details provided.'}"
-    )
+@app.post("/api/interview")
+async def interview_endpoint(req: InterviewRequest):
+    api_key = os.environ.get("GROQ_API_KEY")
+    if not api_key:
+        raise HTTPException(status_code=400, detail="GROQ_API_KEY missing in .env")
+    
+    client = OpenAI(api_key=api_key.strip(), base_url="https://api.groq.com/openai/v1")
+
+    # 1. System Prompt
+    system_instruction = f"""
+    You are a Senior HR Manager conducting a Round 2 behavioral interview.
+    Target Role: {req.role}
+    Resume Context: {req.architectureDetails}
+
+    INCREMENTAL SCORING RULES:
+    Evaluate the candidate's latest response and issue a POINT ADJUSTMENT (`scoreChange`) based on answer quality:
+    * Great STAR Answer (Clear context, personal action, quantifiable result): +10 to +15 points
+    * Good/Acceptable Answer (Relevant and clear, minor details missing): +5 to +8 points
+    * Weak/Vague Answer (Missing key details or lacks ownership): -3 to -5 points
+    * Wrong / Off-topic / Single-word Answer: -5 to -10 points (Deduct points gently, DO NOT reset to 0)
+
+    INTERVIEW RULES:
+    1. Acknowledge their response and explain why points were added or deducted in your `critique`.
+    2. Read the Conversation History below and NEVER ask a question that was already asked.
+    3. Keep spoken responses short (1-3 sentences max) so text-to-speech stays natural.
+
+    CONVERSATION HISTORY:
+    {req.history}
+
+    You MUST return your response strictly as a JSON object with this exact structure:
+    {{
+        "critique": "Your brief spoken reaction explaining the point change",
+        "scoreChange": 5, 
+        "nextQuestion": "Your next question for the candidate"
+    }}
+    """
+
+    try:
+        # 2. Call Groq
+        response = client.chat.completions.create(
+            model="llama-3.3-70b-versatile",
+            messages=[
+                {"role": "system", "content": system_instruction},
+                {"role": "user", "content": req.userResponse}
+            ],
+            response_format={"type": "json_object"},
+            temperature=0.6,
+        )
+
+        content = response.choices[0].message.content
+        return json.loads(content)
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Groq API Error: {str(e)}")
 
     # --- Build multi-turn conversation history for Gemini ---
     conversation_contents: list[types.Content] = []
@@ -320,8 +352,8 @@ async def senior_staff_interrogation(req: InterviewRequest):
 
     # --- Call Gemini with full conversation context ---
     try:
-        response = client.models.generate_content(
-            model="gemini-3.5-flash-lite",
+        response = await client.aio.models.generate_content(
+            model="gemini-3.6-flash",
             contents=conversation_contents,
             config=types.GenerateContentConfig(
                 system_instruction=system_instruction,
