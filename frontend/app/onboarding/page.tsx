@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { Target, Clock, Calendar, ArrowRight, CheckCircle2 } from 'lucide-react';
 import { roles } from '@/lib/mock-data';
 import { cn } from '@/lib/utils';
+import { SpotlightTiltCard } from '@/components/ui/SpotlightTiltCard';
 
 export default function OnboardingWizard() {
   const router = useRouter();
@@ -23,13 +24,16 @@ export default function OnboardingWizard() {
     <div className="min-h-screen bg-[#030712] flex items-center justify-center p-6 relative overflow-hidden font-sans">
       {/* Background decorations */}
       <div className="fixed inset-0 pointer-events-none z-0">
-        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 brightness-100 contrast-150"></div>
+        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 brightness-100 contrast-150 animate-noise"></div>
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-600/20 rounded-full blur-[120px] mix-blend-screen pointer-events-none"></div>
         <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-600/20 rounded-full blur-[120px] mix-blend-screen pointer-events-none"></div>
-        <div className="absolute inset-0 bg-grid pointer-events-none opacity-20 group-hover:opacity-50 transition-opacity duration-700"></div>
+        <div className="absolute inset-0 bg-grid pointer-events-none opacity-20 transition-opacity duration-700"></div>
       </div>
       
-      <div className="glass-card w-full max-w-2xl p-8 relative z-10 shadow-2xl">
+      <SpotlightTiltCard 
+        spotlightColor="rgba(59, 130, 246, 0.2)"
+        className="w-full max-w-2xl p-8 relative z-10 shadow-2xl bg-[#030712]/60 backdrop-blur-xl border border-white/10 rounded-3xl"
+      >
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-2xl font-bold text-white tracking-tight">Let's build your roadmap</h2>
@@ -51,7 +55,7 @@ export default function OnboardingWizard() {
 
         <div className="min-h-[300px]">
           {step === 1 && (
-            <div className="animate-in fade-in slide-in-from-right-4 duration-500">
+            <div className="animate-in fade-in slide-in-from-right-4 duration-500 text-left">
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-10 h-10 bg-blue-500/10 rounded-xl border border-blue-500/20 flex items-center justify-center text-blue-400">
                   <Target className="w-5 h-5" />
@@ -61,26 +65,27 @@ export default function OnboardingWizard() {
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {roles.map(role => (
-                  <button
+                  <SpotlightTiltCard
                     key={role.id}
                     onClick={() => setFormData({ ...formData, role: role.id })}
+                    spotlightColor="rgba(59, 130, 246, 0.15)"
                     className={cn(
-                      "p-5 rounded-2xl border text-left transition-all duration-300 group relative overflow-hidden",
+                      "p-5 rounded-2xl border text-left transition-all duration-300 group cursor-pointer relative overflow-hidden",
                       formData.role === role.id 
-                        ? "border-blue-500 bg-blue-500/10 shadow-[0_0_20px_rgba(59,130,246,0.15)]" 
+                        ? "border-blue-500 bg-blue-500/10 shadow-[0_0_20px_rgba(59, 130, 246, 0.15)]" 
                         : "border-white/5 bg-white/5 hover:border-white/20 hover:bg-white/10"
                     )}
                   >
-                    <div className="font-bold text-slate-200 group-hover:text-white transition-colors">{role.title}</div>
-                    <div className="text-xs font-medium text-slate-500 mt-1 uppercase tracking-wider">{role.category}</div>
-                  </button>
+                    <div className="font-bold text-slate-200 group-hover:text-white transition-colors relative z-10">{role.title}</div>
+                    <div className="text-xs font-medium text-slate-500 mt-1 uppercase tracking-wider relative z-10">{role.category}</div>
+                  </SpotlightTiltCard>
                 ))}
               </div>
             </div>
           )}
 
           {step === 2 && (
-            <div className="animate-in fade-in slide-in-from-right-4 duration-500">
+            <div className="animate-in fade-in slide-in-from-right-4 duration-500 text-left">
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-10 h-10 bg-purple-500/10 rounded-xl border border-purple-500/20 flex items-center justify-center text-purple-400">
                   <Clock className="w-5 h-5" />
@@ -109,7 +114,7 @@ export default function OnboardingWizard() {
           )}
 
           {step === 3 && (
-            <div className="animate-in fade-in slide-in-from-right-4 duration-500">
+            <div className="animate-in fade-in slide-in-from-right-4 duration-500 text-left">
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-10 h-10 bg-cyan-500/10 rounded-xl border border-cyan-500/20 flex items-center justify-center text-cyan-400">
                   <Calendar className="w-5 h-5" />
@@ -119,29 +124,30 @@ export default function OnboardingWizard() {
               
               <div className="grid grid-cols-2 gap-4">
                 {['1 month', '3 months', '6 months', '1 year+'].map(time => (
-                  <button
+                  <SpotlightTiltCard
                     key={time}
                     onClick={() => setFormData({ ...formData, deadline: time })}
+                    spotlightColor="rgba(6, 182, 212, 0.15)"
                     className={cn(
-                      "p-5 rounded-2xl border text-center transition-all duration-300",
+                      "p-5 rounded-2xl border text-center transition-all duration-300 cursor-pointer relative overflow-hidden",
                       formData.deadline === time 
-                        ? "border-cyan-500 bg-cyan-500/10 shadow-[0_0_20px_rgba(6,182,212,0.15)]" 
+                        ? "border-cyan-500 bg-cyan-500/10 shadow-[0_0_20px_rgba(6, 182, 212, 0.15)]" 
                         : "border-white/5 bg-white/5 hover:border-white/20 hover:bg-white/10"
                     )}
                   >
-                    <div className="font-bold text-slate-200">{time}</div>
-                  </button>
+                    <div className="font-bold text-slate-200 relative z-10">{time}</div>
+                  </SpotlightTiltCard>
                 ))}
               </div>
             </div>
           )}
         </div>
 
-        <div className="mt-8 flex justify-between items-center pt-6 border-t border-white/10">
+        <div className="mt-8 flex justify-between items-center pt-6 border-t border-white/10 relative z-10">
           <button 
             onClick={() => setStep(step - 1)}
             disabled={step === 1}
-            className="px-6 py-2.5 rounded-xl font-bold text-slate-500 hover:text-white hover:bg-white/10 disabled:opacity-0 transition-all"
+            className="px-6 py-2.5 rounded-xl font-bold text-slate-500 hover:text-white hover:bg-white/10 disabled:opacity-0 transition-all cursor-pointer"
           >
             Back
           </button>
@@ -152,7 +158,7 @@ export default function OnboardingWizard() {
               (step === 1 && !formData.role) || 
               (step === 3 && !formData.deadline)
             }
-            className="bg-blue-600 hover:bg-blue-500 disabled:bg-white/5 disabled:border disabled:border-white/10 disabled:text-slate-600 text-white px-8 py-3 rounded-xl font-bold transition-all shadow-[0_0_20px_rgba(37,99,235,0.2)] hover:shadow-[0_0_25px_rgba(37,99,235,0.4)] flex items-center gap-2"
+            className="bg-blue-600 hover:bg-blue-500 disabled:bg-white/5 disabled:border disabled:border-white/10 disabled:text-slate-600 text-white px-8 py-3 rounded-xl font-bold transition-all shadow-[0_0_20px_rgba(37,99,235,0.2)] hover:shadow-[0_0_25px_rgba(37,99,235,0.4)] flex items-center gap-2 cursor-pointer"
           >
             {step === 3 ? (
               <>Finish & Upload Resume <CheckCircle2 className="w-5 h-5" /></>
@@ -161,7 +167,7 @@ export default function OnboardingWizard() {
             )}
           </button>
         </div>
-      </div>
+      </SpotlightTiltCard>
     </div>
   );
 }
