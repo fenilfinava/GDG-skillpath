@@ -2,6 +2,7 @@
 import { mockUser } from '@/lib/mock-data';
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
 import { Award, Flame, CheckCircle, Clock } from 'lucide-react';
+import { SpotlightTiltCard } from '@/components/ui/SpotlightTiltCard';
 
 const activityData = [
   { name: 'Mon', hours: 2 },
@@ -15,66 +16,81 @@ const activityData = [
 
 export default function ProgressDashboard() {
   return (
-    <div className="max-w-6xl mx-auto animate-in fade-in duration-500">
+    <div className="max-w-6xl mx-auto text-left">
       <div className="mb-8">
         <h2 className="text-3xl font-bold text-white mb-2">My Progress</h2>
         <p className="text-slate-400">Track your learning journey and milestones.</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <div className="glass-card p-6 flex items-center gap-4 relative overflow-hidden group">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 mb-8">
+        <SpotlightTiltCard 
+          spotlightColor="rgba(249, 115, 22, 0.15)"
+          className="bg-[#030712]/50 backdrop-blur-xl border border-white/10 p-6 flex items-center gap-4 rounded-3xl shadow-xl"
+        >
           <div className="absolute -top-24 -right-24 w-48 h-48 bg-purple-500/10 rounded-full blur-[80px] group-hover:bg-purple-500/20 transition-colors duration-700 pointer-events-none"></div>
-            <div className="absolute inset-0 bg-grid pointer-events-none opacity-20 group-hover:opacity-50 transition-opacity duration-700"></div>
-          <div className="relative z-10 w-12 h-12 rounded-full bg-orange-500/20 flex items-center justify-center">
+          <div className="absolute inset-0 bg-grid pointer-events-none opacity-20 group-hover:opacity-50 transition-opacity duration-700"></div>
+          <div className="relative z-10 w-12 h-12 rounded-full bg-orange-500/20 flex items-center justify-center shrink-0">
             <Flame className="w-6 h-6 text-orange-400" />
           </div>
-          <div>
+          <div className="relative z-10">
             <p className="text-sm text-slate-400">Current Streak</p>
             <p className="text-2xl font-bold text-white">{mockUser.streak} Days</p>
           </div>
-        </div>
+        </SpotlightTiltCard>
 
-        <div className="glass-card p-6 flex items-center gap-4 relative overflow-hidden group">
+        <SpotlightTiltCard 
+          spotlightColor="rgba(59, 130, 246, 0.15)"
+          className="bg-[#030712]/50 backdrop-blur-xl border border-white/10 p-6 flex items-center gap-4 rounded-3xl shadow-xl"
+        >
           <div className="absolute -top-24 -right-24 w-48 h-48 bg-purple-500/10 rounded-full blur-[80px] group-hover:bg-purple-500/20 transition-colors duration-700 pointer-events-none"></div>
-            <div className="absolute inset-0 bg-grid pointer-events-none opacity-20 group-hover:opacity-50 transition-opacity duration-700"></div>
-          <div className="relative z-10 w-12 h-12 rounded-full bg-blue-500/20 flex items-center justify-center">
+          <div className="absolute inset-0 bg-grid pointer-events-none opacity-20 group-hover:opacity-50 transition-opacity duration-700"></div>
+          <div className="relative z-10 w-12 h-12 rounded-full bg-blue-500/20 flex items-center justify-center shrink-0">
             <Clock className="w-6 h-6 text-blue-400" />
           </div>
-          <div>
+          <div className="relative z-10">
             <p className="text-sm text-slate-400">Hours This Week</p>
             <p className="text-2xl font-bold text-white">21 hrs</p>
           </div>
-        </div>
+        </SpotlightTiltCard>
 
-        <div className="glass-card p-6 flex items-center gap-4 relative overflow-hidden group">
+        <SpotlightTiltCard 
+          spotlightColor="rgba(34, 197, 94, 0.15)"
+          className="bg-[#030712]/50 backdrop-blur-xl border border-white/10 p-6 flex items-center gap-4 rounded-3xl shadow-xl"
+        >
           <div className="absolute -top-24 -right-24 w-48 h-48 bg-purple-500/10 rounded-full blur-[80px] group-hover:bg-purple-500/20 transition-colors duration-700 pointer-events-none"></div>
-            <div className="absolute inset-0 bg-grid pointer-events-none opacity-20 group-hover:opacity-50 transition-opacity duration-700"></div>
-          <div className="relative z-10 w-12 h-12 rounded-full bg-green-500/20 flex items-center justify-center">
+          <div className="absolute inset-0 bg-grid pointer-events-none opacity-20 group-hover:opacity-50 transition-opacity duration-700"></div>
+          <div className="relative z-10 w-12 h-12 rounded-full bg-green-500/20 flex items-center justify-center shrink-0">
             <CheckCircle className="w-6 h-6 text-green-400" />
           </div>
-          <div>
+          <div className="relative z-10">
             <p className="text-sm text-slate-400">Tasks Completed</p>
             <p className="text-2xl font-bold text-white">14</p>
           </div>
-        </div>
+        </SpotlightTiltCard>
 
-        <div className="glass-card p-6 flex items-center gap-4 relative overflow-hidden group">
+        <SpotlightTiltCard 
+          spotlightColor="rgba(139, 92, 246, 0.15)"
+          className="bg-[#030712]/50 backdrop-blur-xl border border-white/10 p-6 flex items-center gap-4 rounded-3xl shadow-xl"
+        >
           <div className="absolute -top-24 -right-24 w-48 h-48 bg-purple-500/10 rounded-full blur-[80px] group-hover:bg-purple-500/20 transition-colors duration-700 pointer-events-none"></div>
-            <div className="absolute inset-0 bg-grid pointer-events-none opacity-20 group-hover:opacity-50 transition-opacity duration-700"></div>
-          <div className="relative z-10 w-12 h-12 rounded-full bg-purple-500/20 flex items-center justify-center">
+          <div className="absolute inset-0 bg-grid pointer-events-none opacity-20 group-hover:opacity-50 transition-opacity duration-700"></div>
+          <div className="relative z-10 w-12 h-12 rounded-full bg-purple-500/20 flex items-center justify-center shrink-0">
             <Award className="w-6 h-6 text-purple-400" />
           </div>
-          <div>
+          <div className="relative z-10">
             <p className="text-sm text-slate-400">Readiness</p>
             <p className="text-2xl font-bold text-white">{mockUser.readinessScore}/100</p>
           </div>
-        </div>
+        </SpotlightTiltCard>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="glass-card p-6 col-span-1 lg:col-span-2 relative overflow-hidden group">
+        <SpotlightTiltCard 
+          spotlightColor="rgba(59, 130, 246, 0.15)"
+          className="bg-[#030712]/50 backdrop-blur-xl border border-white/10 p-6 col-span-1 lg:col-span-2 rounded-3xl shadow-xl"
+        >
           <div className="absolute -top-24 -right-24 w-48 h-48 bg-purple-500/10 rounded-full blur-[80px] group-hover:bg-purple-500/20 transition-colors duration-700 pointer-events-none"></div>
-            <div className="absolute inset-0 bg-grid pointer-events-none opacity-20 group-hover:opacity-50 transition-opacity duration-700"></div>
+          <div className="absolute inset-0 bg-grid pointer-events-none opacity-20 group-hover:opacity-50 transition-opacity duration-700"></div>
           <h3 className="relative z-10 text-lg font-semibold text-white mb-6">Learning Activity (Last 7 Days)</h3>
           <div className="relative z-10 h-[300px] w-full -ml-4">
             <ResponsiveContainer width="100%" height="100%">
@@ -96,11 +112,14 @@ export default function ProgressDashboard() {
               </AreaChart>
             </ResponsiveContainer>
           </div>
-        </div>
+        </SpotlightTiltCard>
 
-        <div className="glass-card p-6 relative overflow-hidden group">
+        <SpotlightTiltCard 
+          spotlightColor="rgba(139, 92, 246, 0.15)"
+          className="bg-[#030712]/50 backdrop-blur-xl border border-white/10 p-6 rounded-3xl shadow-xl text-left"
+        >
           <div className="absolute -top-24 -right-24 w-48 h-48 bg-purple-500/10 rounded-full blur-[80px] group-hover:bg-purple-500/20 transition-colors duration-700 pointer-events-none"></div>
-            <div className="absolute inset-0 bg-grid pointer-events-none opacity-20 group-hover:opacity-50 transition-opacity duration-700"></div>
+          <div className="absolute inset-0 bg-grid pointer-events-none opacity-20 group-hover:opacity-50 transition-opacity duration-700"></div>
           <h3 className="relative z-10 text-lg font-semibold text-white mb-6">Recent Milestones</h3>
           <div className="relative z-10 space-y-6">
             
@@ -140,7 +159,7 @@ export default function ProgressDashboard() {
             </div>
 
           </div>
-        </div>
+        </SpotlightTiltCard>
       </div>
     </div>
   );
