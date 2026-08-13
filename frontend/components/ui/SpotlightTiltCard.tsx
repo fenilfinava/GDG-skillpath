@@ -7,9 +7,10 @@ interface SpotlightTiltCardProps extends HTMLMotionProps<"div"> {
   children: React.ReactNode;
   className?: string;
   spotlightColor?: string;
+  disableTilt?: boolean;
 }
 
-export function SpotlightTiltCard({ children, className, spotlightColor = "rgba(139, 92, 246, 0.15)", style, ...rest }: SpotlightTiltCardProps) {
+export function SpotlightTiltCard({ children, className, spotlightColor = "rgba(139, 92, 246, 0.15)", disableTilt = false, style, ...rest }: SpotlightTiltCardProps) {
   const ref = useRef<HTMLDivElement>(null);
   
   const mouseX = useMotionValue(0);
@@ -51,9 +52,9 @@ export function SpotlightTiltCard({ children, className, spotlightColor = "rgba(
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       style={{
-        rotateX,
-        rotateY,
-        transformStyle: "preserve-3d",
+        rotateX: disableTilt ? 0 : rotateX,
+        rotateY: disableTilt ? 0 : rotateY,
+        transformStyle: disableTilt ? "flat" : "preserve-3d",
         ...style
       }}
       className={cn(
@@ -66,7 +67,7 @@ export function SpotlightTiltCard({ children, className, spotlightColor = "rgba(
         className="pointer-events-none absolute -inset-px opacity-0 transition duration-300 group-hover:opacity-100 z-0"
         style={{ background }}
       />
-      <div style={{ transform: "translateZ(30px)", transformStyle: "preserve-3d" }} className="w-full h-full relative z-10 flex flex-col">
+      <div style={{ transform: disableTilt ? "none" : "translateZ(30px)", transformStyle: disableTilt ? "flat" : "preserve-3d" }} className="w-full h-full relative z-10 flex flex-col">
         {children}
       </div>
     </motion.div>

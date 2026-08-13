@@ -1,14 +1,17 @@
 "use client";
 import { roadmapPhases } from '@/lib/mock-data';
-import { CheckCircle2, Circle, Clock, PlayCircle, BookOpen, Code, Video } from 'lucide-react';
+import { CheckCircle2, Circle, Clock, PlayCircle, BookOpen, Code, Video, Sparkles, Trophy } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { GlitchText } from '@/components/ui/GlitchText';
 import { SpotlightTiltCard } from '@/components/ui/SpotlightTiltCard';
+import { Confetti } from '@/components/ui/Confetti';
 
 export default function RoadmapView() {
-  const [selectedTask, setSelectedTask] = useState<{title: string, type: string, duration: string, rationale?: string, completed?: boolean} | null>(null);
+  const [selectedTask, setSelectedTask] = useState<{id?: string, title: string, type: string, duration: string, rationale?: string, completed?: boolean} | null>(null);
+  const [showConfetti, setShowConfetti] = useState(false);
+  const [levelUpNotification, setLevelUpNotification] = useState<string | null>(null);
 
   const getTaskIcon = (type: string) => {
     switch(type) {
@@ -19,8 +22,45 @@ export default function RoadmapView() {
     }
   };
 
+  const handleCompleteTask = () => {
+    if (!selectedTask) return;
+    setShowConfetti(true);
+    setLevelUpNotification(`LEVEL UP! Completed: "${selectedTask.title}" (+50 XP)`);
+    setSelectedTask(null);
+
+    setTimeout(() => {
+      setLevelUpNotification(null);
+    }, 4000);
+  };
+
   return (
-    <div className="max-w-7xl mx-auto h-full flex flex-col min-w-0 w-full">
+    <div className="max-w-7xl mx-auto h-full flex flex-col min-w-0 w-full relative">
+      <Confetti trigger={showConfetti} onComplete={() => setShowConfetti(false)} />
+
+      {/* Level Up Toast Notification */}
+      <AnimatePresence>
+        {levelUpNotification && (
+          <motion.div
+            initial={{ opacity: 0, y: -50, scale: 0.8 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -20, scale: 0.9 }}
+            className="fixed top-8 left-1/2 -translate-x-1/2 z-50 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 p-[2px] rounded-2xl shadow-[0_0_30px_rgba(168,85,247,0.5)]"
+          >
+            <div className="bg-[#030712] px-6 py-4 rounded-[14px] flex items-center gap-3 text-white">
+              <div className="p-2 bg-yellow-500/20 text-yellow-400 rounded-xl border border-yellow-500/30">
+                <Trophy className="w-5 h-5 animate-bounce" />
+              </div>
+              <div>
+                <div className="text-xs font-black text-yellow-400 uppercase tracking-widest flex items-center gap-1">
+                  <Sparkles className="w-3.5 h-3.5" /> Level Up!
+                </div>
+                <div className="text-sm font-bold text-slate-200">{levelUpNotification}</div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <div className="mb-10 flex justify-between items-end shrink-0">
         <div>
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">
@@ -153,13 +193,16 @@ export default function RoadmapView() {
                 <div className="flex gap-4">
                   <button 
                     onClick={() => setSelectedTask(null)}
-                    className="flex-1 bg-white/5 hover:bg-white/10 border border-white/10 text-white py-3.5 rounded-xl font-bold transition-all"
+                    className="flex-1 bg-white/5 hover:bg-white/10 border border-white/10 text-white py-3.5 rounded-xl font-bold transition-all cursor-pointer"
                   >
                     Close
                   </button>
                   {!selectedTask.completed && (
-                    <button className="flex-[2] bg-blue-600 hover:bg-blue-500 text-white py-3.5 rounded-xl font-bold transition-all shadow-[0_0_20px_rgba(37,99,235,0.4)] hover:shadow-[0_0_30px_rgba(37,99,235,0.6)] flex items-center justify-center gap-2">
-                      <PlayCircle className="w-5 h-5" /> Start Task
+                    <button 
+                      onClick={handleCompleteTask}
+                      className="flex-[2] bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white py-3.5 rounded-xl font-bold transition-all shadow-[0_0_20px_rgba(37,99,235,0.4)] hover:shadow-[0_0_30px_rgba(37,99,235,0.6)] flex items-center justify-center gap-2 cursor-pointer"
+                    >
+                      <CheckCircle2 className="w-5 h-5" /> Mark as Complete
                     </button>
                   )}
                 </div>

@@ -31,6 +31,7 @@ export default function OnboardingWizard() {
       </div>
       
       <SpotlightTiltCard 
+        disableTilt={true}
         spotlightColor="rgba(59, 130, 246, 0.2)"
         className="w-full max-w-2xl p-8 relative z-10 shadow-2xl bg-[#030712]/60 backdrop-blur-xl border border-white/10 rounded-3xl"
       >
