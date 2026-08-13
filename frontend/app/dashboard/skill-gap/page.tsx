@@ -4,6 +4,7 @@ import { ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadius
 import { Target, AlertTriangle, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import { SpotlightTiltCard } from '@/components/ui/SpotlightTiltCard';
 
 export default function SkillGapDashboard() {
   const chartData = skillGaps.map(gap => ({
@@ -26,7 +27,7 @@ export default function SkillGapDashboard() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-        <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.1 }} className="bg-[#030712]/50 backdrop-blur-xl border border-white/10 rounded-3xl p-8 shadow-2xl flex flex-col min-h-[450px] relative overflow-hidden">
+        <SpotlightTiltCard spotlightColor="rgba(59, 130, 246, 0.15)" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.1 }} className="bg-[#030712]/50 backdrop-blur-xl border border-white/10 rounded-3xl p-8 shadow-2xl flex flex-col min-h-[450px]">
           <div className="absolute -top-24 -right-24 w-48 h-48 bg-purple-500/10 rounded-full blur-[80px] group-hover:bg-purple-500/20 transition-colors duration-700 pointer-events-none"></div>
             <div className="absolute inset-0 bg-grid pointer-events-none opacity-20 group-hover:opacity-50 transition-opacity duration-700"></div>
           <h3 className="text-xl font-bold text-white mb-8 flex items-center gap-3 relative z-10">
@@ -45,9 +46,9 @@ export default function SkillGapDashboard() {
               </RadarChart>
             </ResponsiveContainer>
           </div>
-        </motion.div>
+        </SpotlightTiltCard>
 
-        <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }} className="bg-[#030712]/50 backdrop-blur-xl border border-white/10 rounded-3xl p-8 shadow-2xl flex flex-col relative overflow-hidden">
+        <SpotlightTiltCard spotlightColor="rgba(249, 115, 22, 0.15)" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }} className="bg-[#030712]/50 backdrop-blur-xl border border-white/10 rounded-3xl p-8 shadow-2xl flex flex-col relative overflow-hidden">
           <div className="absolute -top-24 -right-24 w-48 h-48 bg-purple-500/10 rounded-full blur-[80px] group-hover:bg-purple-500/20 transition-colors duration-700 pointer-events-none"></div>
             <div className="absolute inset-0 bg-grid pointer-events-none opacity-20 group-hover:opacity-50 transition-opacity duration-700"></div>
           <h3 className="text-xl font-bold text-white mb-8 flex items-center gap-3 relative z-10">
@@ -103,7 +104,7 @@ export default function SkillGapDashboard() {
               </motion.div>
             ))}
           </div>
-        </motion.div>
+        </SpotlightTiltCard>
       </div>
     </div>
   );

@@ -4,6 +4,8 @@ import { CheckCircle2, Circle, Clock, PlayCircle, BookOpen, Code, Video } from '
 import { cn } from '@/lib/utils';
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { GlitchText } from '@/components/ui/GlitchText';
+import { SpotlightTiltCard } from '@/components/ui/SpotlightTiltCard';
 
 export default function RoadmapView() {
   const [selectedTask, setSelectedTask] = useState<{title: string, type: string, duration: string, rationale?: string, completed?: boolean} | null>(null);
@@ -18,10 +20,12 @@ export default function RoadmapView() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto h-full flex flex-col">
+    <div className="max-w-7xl mx-auto h-full flex flex-col min-w-0 w-full">
       <div className="mb-10 flex justify-between items-end shrink-0">
         <div>
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">My Learning Roadmap</h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">
+            My Learning Roadmap
+          </h2>
           <p className="text-slate-400 text-lg">Your personalized path to becoming interview-ready.</p>
         </div>
       </div>
@@ -52,14 +56,15 @@ export default function RoadmapView() {
               )}>
                 <div className="absolute inset-0 overflow-y-auto p-5 space-y-4 custom-scrollbar">
                 {phase.tasks.map((task, taskIndex) => (
-                  <motion.div 
+                  <SpotlightTiltCard 
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: (phaseIndex * 0.15) + (taskIndex * 0.1) }}
                     key={task.id}
                     onClick={() => setSelectedTask(task)}
+                    spotlightColor="rgba(59, 130, 246, 0.2)"
                     className={cn(
-                      "p-5 rounded-2xl border transition-all duration-300 cursor-pointer group relative overflow-hidden",
+                      "group p-5 rounded-2xl border transition-all duration-300 cursor-pointer relative overflow-hidden",
                       task.completed ? "bg-white/5 border-white/5 opacity-60" :
                       phase.status === 'locked' ? "bg-[#030712]/50 border-white/5 opacity-40 cursor-not-allowed" :
                       "bg-white/10 border-white/10 hover:border-blue-500/50 hover:bg-white/15 hover:scale-[1.02] hover:shadow-[0_10px_30px_rgba(59,130,246,0.15)]"
@@ -93,7 +98,7 @@ export default function RoadmapView() {
                         {task.duration}
                       </div>
                     </div>
-                  </motion.div>
+                  </SpotlightTiltCard>
                 ))}
                 </div>
               </div>
