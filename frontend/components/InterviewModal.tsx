@@ -118,7 +118,7 @@ export default function InterviewModal({ isOpen, onClose, targetRole, resumeSumm
         const aiMessage: ChatMessage = {
           id: `ai-${Date.now()}`,
           role: "ai",
-          content: data.interrogationQuestion || "No question returned.",
+          content: data.nextQuestion || data.interrogationQuestion || "No question returned.",
           critique: data.critique || "",
           score: data.score ?? 0,
           timestamp: new Date(),
@@ -129,7 +129,7 @@ export default function InterviewModal({ isOpen, onClose, targetRole, resumeSumm
         setInterviewScore(data.score ?? 0);
 
         // Append AI response to history for multi-turn
-        setHistory((prev) => [...prev, { role: "model", content: data.interrogationQuestion || "" }]);
+        setHistory((prev) => [...prev, { role: "model", content: data.nextQuestion || data.interrogationQuestion || "" }]);
       } catch (err: unknown) {
         const msg = err instanceof Error ? err.message : "An unexpected error occurred.";
         setError(msg);
