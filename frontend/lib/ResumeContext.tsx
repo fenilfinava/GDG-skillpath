@@ -112,7 +112,6 @@ export function ResumeProvider({ children }: { children: ReactNode }) {
           setSkills(resumeData.skills || []);
           setGaps(resumeData.skill_gaps || []);
           setSummary(resumeData.summary || "");
-          setHasData(true);
           
           const summaryLower = (resumeData.summary || "").toLowerCase();
           if (summaryLower.includes("full stack") || summaryLower.includes("fullstack")) {
@@ -143,6 +142,11 @@ export function ResumeProvider({ children }: { children: ReactNode }) {
           setRoadmapId(roadmapData.id);
           setRoadmapPhases(roadmapData.phases || []);
           if(roadmapData.target_role) setTargetRole(roadmapData.target_role);
+        }
+        
+        // Signal that all data is loaded
+        if (resumeData) {
+          setHasData(true);
         }
       } catch (err) {
         console.error("Error loading user data:", err);
