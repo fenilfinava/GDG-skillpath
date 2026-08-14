@@ -17,7 +17,12 @@ const navItems = [
   { href: '/dashboard/progress', label: 'Progress', icon: BookOpen },
 ];
 
-export default function Sidebar() {
+interface SidebarProps {
+  isMobileOpen?: boolean;
+  setIsMobileOpen?: (open: boolean) => void;
+}
+
+export default function Sidebar({ isMobileOpen, setIsMobileOpen }: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
@@ -34,13 +39,24 @@ export default function Sidebar() {
   const avatarSeed = encodeURIComponent(userName);
 
   return (
-    <motion.aside 
-      initial={{ x: -50, opacity: 0 }}
-      animate={{ x: 0, opacity: 1 }}
-      transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-      className="w-[280px] h-[calc(100vh-32px)] fixed left-4 top-4 z-50 flex flex-col bg-[#0A0D14]/80 backdrop-blur-3xl border border-white/[0.05] rounded-[24px] shadow-[0_0_40px_rgba(0,0,0,0.5)] overflow-hidden"
-      onMouseLeave={() => setHoveredIndex(null)}
-    >
+    <>
+      {/* Mobile Backdrop */}
+      {isMobileOpen && (
+        <div 
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 lg:hidden"
+          onClick={() => setIsMobileOpen?.(false)}
+        />
+      )}
+      <motion.aside 
+        initial={false}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+        className={cn(
+          "w-[280px] h-[calc(100vh-32px)] fixed left-4 top-4 z-50 flex flex-col bg-[#0A0D14]/95 lg:bg-[#0A0D14]/80 backdrop-blur-3xl border border-white/[0.05] rounded-[24px] shadow-[0_0_40px_rgba(0,0,0,0.5)] overflow-hidden transition-transform duration-300",
+          isMobileOpen ? "translate-x-0" : "-translate-x-[120%] lg:translate-x-0"
+        )}
+        onMouseLeave={() => setHoveredIndex(null)}
+      >
       {/* Glossy top highlight */}
       <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
 
@@ -135,5 +151,6 @@ export default function Sidebar() {
         </div>
       </div>
     </motion.aside>
+    </>
   );
 }

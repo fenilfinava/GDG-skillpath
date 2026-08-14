@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
-import { Bell, Search, Command } from 'lucide-react';
+import { Bell, Search, Command, Menu } from 'lucide-react';
 import { motion, useScroll, useMotionValueEvent } from 'framer-motion';
 import { CommandPalette } from '@/components/ui/CommandPalette';
 
@@ -15,7 +15,7 @@ const TITLES: Record<string, string> = {
   '/dashboard/settings': 'Settings',
 };
 
-export default function Navbar({ title }: { title?: string }) {
+export default function Navbar({ title, onMenuClick }: { title?: string, onMenuClick?: () => void }) {
   const pathname = usePathname();
   const activeTitle = title || TITLES[pathname] || 'Dashboard';
   const { scrollY } = useScroll();
@@ -52,11 +52,19 @@ export default function Navbar({ title }: { title?: string }) {
         initial={{ y: -20, opacity: 0 }}
         animate={hidden ? "hidden" : "visible"}
         transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-        className="h-20 flex items-center justify-between px-6 mx-8 mt-4 rounded-2xl bg-[#0A0D14]/80 backdrop-blur-2xl sticky top-4 z-40 border border-white/10 shadow-2xl"
+        className="h-20 flex items-center justify-between px-4 md:px-6 mx-4 md:mx-8 mt-4 rounded-2xl bg-[#0A0D14]/80 backdrop-blur-2xl sticky top-4 z-40 border border-white/10 shadow-2xl"
       >
-        <div className="flex flex-col">
-          <h1 className="text-xl font-black tracking-tight text-white mb-0.5">{activeTitle}</h1>
-          <p className="text-[10px] font-bold text-slate-500 tracking-wider uppercase">Dashboard / {activeTitle}</p>
+        <div className="flex items-center gap-3">
+          <button 
+            onClick={onMenuClick}
+            className="lg:hidden p-2 -ml-2 text-slate-400 hover:text-white transition-colors"
+          >
+            <Menu className="w-6 h-6" />
+          </button>
+          <div className="flex flex-col">
+            <h1 className="text-lg md:text-xl font-black tracking-tight text-white mb-0.5">{activeTitle}</h1>
+            <p className="hidden sm:block text-[10px] font-bold text-slate-500 tracking-wider uppercase">Dashboard / {activeTitle}</p>
+          </div>
         </div>
         
         <div className="flex items-center gap-4">

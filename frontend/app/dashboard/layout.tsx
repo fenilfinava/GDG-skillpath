@@ -10,6 +10,7 @@ import { supabase } from '@/lib/supabase';
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const [isAuthorized, setIsAuthorized] = useState(false);
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -34,10 +35,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         {/* Dynamic Background from Landing Page */}
         <DashboardBackground />
 
-        <Sidebar />
-        <div className="flex-1 ml-[312px] flex flex-col min-h-screen relative z-10">
-          <Navbar title="Overview" />
-          <main className="flex-1 p-8 overflow-auto">
+        <Sidebar isMobileOpen={isMobileOpen} setIsMobileOpen={setIsMobileOpen} />
+        
+        <div className="flex-1 ml-0 lg:ml-[312px] flex flex-col min-h-screen relative z-10 transition-all duration-300">
+          <Navbar title="Overview" onMenuClick={() => setIsMobileOpen(true)} />
+          <main className="flex-1 p-4 md:p-8 overflow-auto">
             <div className="max-w-7xl mx-auto w-full h-full">
               {children}
             </div>
