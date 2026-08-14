@@ -129,7 +129,7 @@ export default function RoadmapView() {
       </div>
 
       <div className="flex-1 overflow-x-auto overflow-y-hidden pb-10 pt-2 custom-scrollbar -mx-4 px-4 snap-x snap-mandatory">
-        <div className="flex gap-6 h-full min-w-max pr-24 pl-2">
+        <div className="flex gap-6 h-full min-w-max pr-4 pl-2">
           {roadmapPhases.map((phase, phaseIndex) => (
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
