@@ -128,7 +128,7 @@ function ScoreGauge({ score }: { score: number }) {
 // VoiceInterviewModal Component
 // ---------------------------------------------------------------------------
 export default function VoiceInterviewModal({ isOpen, onClose }: VoiceInterviewModalProps) {
-  const { targetRole, summary, gaps, setInterviewScore } = useResume();
+  const { targetRole, summary, gaps, setInterviewScore, userName } = useResume();
 
   // Determine fallback values for empty ResumeState (for quick testing)
   const finalRole = targetRole && targetRole.trim() ? targetRole : "Software Engineer";
@@ -420,31 +420,31 @@ export default function VoiceInterviewModal({ isOpen, onClose }: VoiceInterviewM
 
           {/* Modal Container */}
           <motion.div
-            initial={{ scale: 0.93, opacity: 0, y: 20 }}
-            animate={{ scale: 1, opacity: 1, y: 0 }}
-            exit={{ scale: 0.93, opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 30 }}
             transition={{ type: "spring", stiffness: 300, damping: 28 }}
-            className="relative w-full max-w-5xl h-[90vh] bg-[#060A13] border border-white/10 rounded-3xl shadow-[0_0_90px_rgba(0,0,0,0.9)] overflow-hidden flex flex-col"
+            className="relative w-full h-full bg-[#030712] overflow-hidden flex flex-col"
           >
             {/* Ambient Animated Gradients */}
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-96 bg-blue-600/10 blur-[120px] pointer-events-none rounded-full" />
             <div className="absolute bottom-0 right-0 w-80 h-80 bg-purple-600/10 blur-[120px] pointer-events-none rounded-full" />
 
             {/* Header */}
-            <div className="flex items-center justify-between px-6 py-4 border-b border-white/[0.08] bg-white/[0.02] shrink-0 relative z-10">
-              <div className="flex items-center gap-3.5">
-                <div className="w-10 h-10 bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/20">
-                  <Mic className="w-5 h-5 text-white" />
+            <div className="flex items-center justify-between px-8 py-5 border-b border-white/[0.05] bg-[#030712] shrink-0 relative z-10">
+              <div className="flex items-center gap-4">
+                <div className="w-10 h-10 bg-white/5 border border-white/10 rounded-xl flex items-center justify-center">
+                  <Mic className="w-5 h-5 text-blue-400" />
                 </div>
                 <div>
-                  <h2 className="text-base md:text-lg font-black text-white tracking-tight flex items-center gap-2">
-                    AI Voice Interviewer
-                    <span className="text-[10px] font-extrabold text-blue-400 bg-blue-500/10 border border-blue-500/20 px-2 py-0.5 rounded-md uppercase tracking-wider">
-                      Browser Native Voice
+                  <h2 className="text-lg font-bold text-white tracking-tight flex items-center gap-2">
+                    AI Voice Interview Session
+                    <span className="text-[10px] font-bold text-blue-400 bg-blue-500/10 border border-blue-500/20 px-2 py-0.5 rounded-md uppercase tracking-widest">
+                      Live
                     </span>
                   </h2>
-                  <p className="text-xs text-slate-400 font-medium">
-                    Target Role: <span className="text-slate-200 font-semibold">{finalRole}</span>
+                  <p className="text-xs text-slate-500 font-medium mt-0.5">
+                    Target Role: {finalRole} {userName ? `• ${userName}` : ""}
                   </p>
                 </div>
               </div>
@@ -606,62 +606,62 @@ export default function VoiceInterviewModal({ isOpen, onClose }: VoiceInterviewM
               </div>
 
               {/* Right Column: Live Conversation Transcript */}
-              <div className="flex-1 flex flex-col min-w-0 bg-[#04070F]">
+              <div className="flex-1 flex flex-col min-w-0 bg-[#030712]">
                 
                 {/* Transcript Header */}
-                <div className="px-6 py-3 border-b border-white/[0.06] bg-white/[0.01] flex items-center justify-between shrink-0">
-                  <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 flex items-center gap-2">
-                    <Bot className="w-3.5 h-3.5 text-blue-400" /> Live Interview Transcript
+                <div className="px-6 py-4 border-b border-white/[0.04] bg-white/[0.01] flex items-center justify-between shrink-0">
+                  <span className="text-xs font-semibold tracking-wide text-slate-400 flex items-center gap-2">
+                    <Bot className="w-4 h-4 text-blue-400" /> Live Interview Transcript
                   </span>
-                  <span className="text-[10px] font-bold text-slate-500">
+                  <span className="text-xs font-medium text-slate-500">
                     {messages.length} Turn{messages.length === 1 ? "" : "s"}
                   </span>
                 </div>
 
                 {/* Messages Scroll Area */}
-                <div className="flex-1 overflow-y-auto p-6 space-y-5 custom-scrollbar">
+                <div className="flex-1 overflow-y-auto p-6 lg:p-8 space-y-6 custom-scrollbar">
                   {messages.map((msg) => (
                     <motion.div
                       key={msg.id}
                       initial={{ opacity: 0, y: 12 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.3 }}
-                      className={`flex gap-3 ${msg.role === "user" ? "flex-row-reverse" : ""}`}
+                      className={`flex gap-4 ${msg.role === "user" ? "flex-row-reverse" : ""}`}
                     >
                       <div
-                        className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 shadow-lg ${
+                        className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${
                           msg.role === "ai"
-                            ? "bg-gradient-to-br from-red-500 to-orange-600 shadow-red-500/20"
-                            : "bg-gradient-to-br from-blue-600 to-purple-600 shadow-blue-500/20"
+                            ? "bg-white/5 border border-white/10"
+                            : "bg-blue-600"
                         }`}
                       >
-                        {msg.role === "ai" ? <Bot className="w-5 h-5 text-white" /> : <User className="w-5 h-5 text-white" />}
+                        {msg.role === "ai" ? <Bot className="w-5 h-5 text-slate-300" /> : <User className="w-5 h-5 text-white" />}
                       </div>
 
                       <div
-                        className={`max-w-[85%] rounded-2xl px-5 py-4 ${
+                        className={`max-w-[85%] rounded-2xl px-6 py-4 ${
                           msg.role === "ai"
-                            ? "bg-white/[0.04] border border-white/[0.08]"
+                            ? "bg-white/[0.03] border border-white/[0.05]"
                             : "bg-blue-600/10 border border-blue-500/20"
                         }`}
                       >
-                        <p className="text-sm text-slate-200 leading-relaxed whitespace-pre-wrap">{msg.content}</p>
+                        <p className="text-[15px] text-slate-200 leading-relaxed whitespace-pre-wrap">{msg.content}</p>
 
                         {/* Staff Critique */}
                         {msg.role === "ai" && msg.critique && (
-                          <div className="mt-3.5 bg-red-500/5 border border-red-500/15 rounded-xl px-4 py-3">
-                            <p className="text-[10px] font-bold text-red-400 uppercase tracking-wider mb-1 flex items-center gap-1.5">
-                              <AlertTriangle className="w-3 h-3" /> Senior Staff Critique
+                          <div className="mt-4 bg-purple-500/5 border border-purple-500/10 rounded-xl px-5 py-4">
+                            <p className="text-[11px] font-bold text-purple-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                              <Sparkles className="w-3.5 h-3.5" /> Interviewer Feedback
                             </p>
-                            <p className="text-xs text-red-200/80 leading-relaxed">{msg.critique}</p>
+                            <p className="text-sm text-purple-200/80 leading-relaxed">{msg.critique}</p>
                           </div>
                         )}
 
                         {/* Score Tag */}
                         {msg.role === "ai" && msg.score !== undefined && msg.score > 0 && (
                           <div className="mt-3 flex items-center gap-2">
-                            <Zap className="w-3.5 h-3.5 text-amber-400" />
-                            <span className="text-xs font-bold text-amber-400">Architecture Soundness: {msg.score}/100</span>
+                            <Zap className="w-4 h-4 text-emerald-400" />
+                            <span className="text-xs font-bold text-emerald-400">Response Quality Score: {msg.score}/100</span>
                           </div>
                         )}
 
@@ -674,13 +674,13 @@ export default function VoiceInterviewModal({ isOpen, onClose }: VoiceInterviewM
 
                   {/* Loading Indicator */}
                   {isLoading && (
-                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex gap-3">
-                      <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-red-500 to-orange-600 flex items-center justify-center shrink-0 shadow-lg shadow-red-500/20">
-                        <Bot className="w-5 h-5 text-white" />
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex gap-4">
+                      <div className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
+                        <Bot className="w-5 h-5 text-slate-300" />
                       </div>
-                      <div className="bg-white/[0.04] border border-white/[0.08] rounded-2xl px-5 py-4 flex items-center gap-3">
-                        <Loader2 className="w-4 h-4 text-blue-400 animate-spin" />
-                        <span className="text-xs text-slate-400 font-medium">Staff Engineer analyzing your answer...</span>
+                      <div className="bg-white/[0.02] border border-white/[0.05] rounded-2xl px-6 py-4 flex items-center gap-3">
+                        <Loader2 className="w-4 h-4 text-slate-400 animate-spin" />
+                        <span className="text-[15px] text-slate-400 font-medium">Thinking...</span>
                       </div>
                     </motion.div>
                   )}
@@ -703,7 +703,7 @@ export default function VoiceInterviewModal({ isOpen, onClose }: VoiceInterviewM
                 </div>
 
                 {/* Fallback Text Input Bar */}
-                <div className="p-4 border-t border-white/[0.06] bg-white/[0.015] shrink-0">
+                <div className="p-5 border-t border-white/[0.04] bg-[#030712] shrink-0">
                   <form
                     onSubmit={(e) => {
                       e.preventDefault();
@@ -711,7 +711,7 @@ export default function VoiceInterviewModal({ isOpen, onClose }: VoiceInterviewM
                         handleUserTurn(textInput);
                       }
                     }}
-                    className="flex items-center gap-3"
+                    className="flex items-center gap-3 max-w-5xl mx-auto"
                   >
                     <input
                       ref={textInputRef}
@@ -720,14 +720,14 @@ export default function VoiceInterviewModal({ isOpen, onClose }: VoiceInterviewM
                       onChange={(e) => setTextInput(e.target.value)}
                       placeholder="Type your response or use mic above..."
                       disabled={isLoading}
-                      className="flex-1 bg-white/[0.04] border border-white/[0.08] rounded-xl px-4 py-3 text-xs text-white placeholder:text-slate-600 focus:outline-none focus:border-blue-500/40 transition-colors"
+                      className="flex-1 bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-[15px] text-white placeholder:text-slate-500 focus:outline-none focus:border-blue-500/40 transition-colors"
                     />
                     <button
                       type="submit"
                       disabled={isLoading || !textInput.trim()}
-                      className="px-5 py-3 bg-blue-600 hover:bg-blue-500 disabled:bg-slate-800 disabled:text-slate-600 text-white rounded-xl font-bold text-xs flex items-center gap-2 transition-all shadow-lg shadow-blue-500/20 disabled:shadow-none shrink-0"
+                      className="px-6 py-4 bg-blue-600 hover:bg-blue-500 disabled:bg-slate-800 disabled:text-slate-600 text-white rounded-2xl font-bold text-[15px] flex items-center gap-2 transition-all disabled:shadow-none shrink-0"
                     >
-                      <Send className="w-3.5 h-3.5" /> Send
+                      <Send className="w-4 h-4" /> Send
                     </button>
                   </form>
                 </div>
