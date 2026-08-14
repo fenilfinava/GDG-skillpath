@@ -5,30 +5,57 @@ import { Award, Flame, CheckCircle, Clock, FileText } from 'lucide-react';
 import Link from 'next/link';
 import { useMemo } from 'react';
 
-// Activity chart is local UI state (not backed by an API)
-const activityData = [
-  { name: 'Mon', hours: 2 },
-  { name: 'Tue', hours: 3.5 },
-  { name: 'Wed', hours: 1 },
-  { name: 'Thu', hours: 4 },
-  { name: 'Fri', hours: 2.5 },
-  { name: 'Sat', hours: 5 },
-  { name: 'Sun', hours: 3 },
-];
-
 export default function ProgressDashboard() {
   const { roadmapPhases, interviewScore, hasData, gaps } = useResume();
 
-  // Dynamic calculations from live data — NO AI logic
-  const { completedTasks, totalTasks, readinessScore, totalHours } = useMemo(() => {
+  // Dynamic calculations from live data
+  const { completedTasks, totalTasks, readinessScore, totalHours, dynamicActivityData } = useMemo(() => {
     const allTasks = roadmapPhases.flatMap(p => p.tasks);
     const total = allTasks.length;
-    const completed = allTasks.filter(t => t.completed).length;
+    const completedTasksList = allTasks.filter(t => t.completed);
+    const completed = completedTasksList.length;
     const roadmapPct = total > 0 ? Math.round((completed / total) * 100) : 0;
     const readiness = total > 0 ? Math.round((roadmapPct + interviewScore) / 2) : interviewScore;
-    // Sum up activity hours for the week
-    const hours = activityData.reduce((sum, d) => sum + d.hours, 0);
-    return { completedTasks: completed, totalTasks: total, readinessScore: readiness, totalHours: hours };
+    
+    // Sum up real activity hours from completed tasks
+    let realTotalHours = 0;
+    completedTasksList.forEach(t => {
+      const match = t.duration.match(/(\d+)\s*(hr|hour|min)/i);
+      if (match) {
+        const val = parseInt(match[1]);
+        const unit = match[2].toLowerCase();
+        if (unit.startsWith('min')) {
+          realTotalHours += val / 60;
+        } else {
+          realTotalHours += val;
+        }
+      }
+    });
+    realTotalHours = Math.round(realTotalHours);
+
+    // Distribute real hours across the week chart deterministically
+    const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    const activity = days.map(d => ({ name: d, hours: 0 }));
+    
+    if (realTotalHours > 0) {
+      let remaining = realTotalHours;
+      // Start from the most recent days (Sun, Sat, Fri...)
+      let i = 6;
+      while (remaining > 0) {
+        const chunk = Math.min(remaining, Math.max(1, Math.ceil(realTotalHours / 4)));
+        activity[i].hours += chunk;
+        remaining -= chunk;
+        i = (i - 1 + 7) % 7;
+      }
+    }
+
+    return { 
+      completedTasks: completed, 
+      totalTasks: total, 
+      readinessScore: readiness, 
+      totalHours: realTotalHours,
+      dynamicActivityData: activity
+    };
   }, [roadmapPhases, interviewScore]);
 
   // Dynamic milestones derived from actual progress
@@ -128,7 +155,7 @@ export default function ProgressDashboard() {
           <h3 className="relative z-10 text-lg font-semibold text-white mb-6">Learning Activity (Last 7 Days)</h3>
           <div className="relative z-10 h-[300px] w-full -ml-4">
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={activityData}>
+              <AreaChart data={dynamicActivityData}>
                 <defs>
                   <linearGradient id="colorHours" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.5}/>
