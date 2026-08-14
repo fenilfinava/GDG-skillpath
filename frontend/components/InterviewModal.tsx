@@ -67,7 +67,7 @@ function ScoreGauge({ score }: { score: number }) {
 // InterviewModal
 // ---------------------------------------------------------------------------
 export default function InterviewModal({ isOpen, onClose, targetRole, resumeSummary }: InterviewModalProps) {
-  const { setInterviewScore } = useResume();
+  const { setInterviewScore, userName } = useResume();
 
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [history, setHistory] = useState<HistoryMessage[]>([]);
@@ -206,25 +206,25 @@ export default function InterviewModal({ isOpen, onClose, targetRole, resumeSumm
           <div className="absolute inset-0 bg-black/70 backdrop-blur-md" onClick={handleClose} />
 
           <motion.div
-            initial={{ scale: 0.92, opacity: 0, y: 30 }}
-            animate={{ scale: 1, opacity: 1, y: 0 }}
-            exit={{ scale: 0.92, opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 30 }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className="relative w-[95vw] max-w-[1400px] h-[88vh] bg-[#060A13] border border-white/[0.08] rounded-3xl shadow-[0_0_80px_rgba(0,0,0,0.8)] overflow-hidden flex flex-col"
+            className="relative w-full h-full bg-[#030712] overflow-hidden flex flex-col"
           >
             {/* Header */}
-            <div className="flex items-center justify-between px-8 py-5 border-b border-white/[0.06] bg-white/[0.02] shrink-0">
+            <div className="flex items-center justify-between px-8 py-5 border-b border-white/[0.05] bg-[#030712] shrink-0">
               <div className="flex items-center gap-4">
-                <div className="w-11 h-11 bg-gradient-to-br from-red-500 to-orange-600 rounded-2xl flex items-center justify-center shadow-lg shadow-red-500/20">
-                  <ShieldAlert className="w-6 h-6 text-white" />
+                <div className="w-10 h-10 bg-white/5 border border-white/10 rounded-xl flex items-center justify-center">
+                  <Bot className="w-5 h-5 text-blue-400" />
                 </div>
                 <div>
-                  <h2 className="text-lg font-black text-white tracking-tight flex items-center gap-2">
-                    AI Interview Simulator
-                    <span className="text-[10px] font-bold text-red-400 bg-red-500/10 border border-red-500/20 px-2 py-0.5 rounded-md uppercase tracking-widest">Live</span>
+                  <h2 className="text-lg font-bold text-white tracking-tight flex items-center gap-2">
+                    Technical Interview Session
+                    <span className="text-[10px] font-bold text-blue-400 bg-blue-500/10 border border-blue-500/20 px-2 py-0.5 rounded-md uppercase tracking-widest">Live</span>
                   </h2>
-                  <p className="text-xs text-slate-500 font-semibold mt-0.5">
-                    Role: {targetRole || "SDE"} • Topic: {topic} • <span className="text-slate-600">25CS056</span>
+                  <p className="text-xs text-slate-500 font-medium mt-0.5">
+                    Role: {targetRole || "SDE"} • Topic: {topic} {userName ? `• ${userName}` : ""}
                   </p>
                 </div>
               </div>
@@ -247,39 +247,39 @@ export default function InterviewModal({ isOpen, onClose, targetRole, resumeSumm
             {/* Split-Screen Body */}
             <div className="flex flex-1 overflow-hidden">
               {/* Left: Chat */}
-              <div className="flex-1 flex flex-col border-r border-white/[0.06] min-w-0">
-                <div className="px-6 py-3 border-b border-white/[0.04] bg-white/[0.01] shrink-0">
-                  <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500 flex items-center gap-2">
-                    <Bot className="w-3.5 h-3.5" /> Senior Staff Engineer Interrogation
+              <div className="flex-1 flex flex-col border-r border-white/[0.05] min-w-0">
+                <div className="px-6 py-4 border-b border-white/[0.04] bg-white/[0.01] shrink-0">
+                  <p className="text-xs font-semibold tracking-wide text-slate-400 flex items-center gap-2">
+                    <Bot className="w-4 h-4" /> Interviewer Chat
                   </p>
                 </div>
 
-                <div className="flex-1 overflow-y-auto p-6 space-y-5 custom-scrollbar">
+                <div className="flex-1 overflow-y-auto p-6 lg:p-8 space-y-6 custom-scrollbar">
                   {messages.map((msg) => (
                     <motion.div key={msg.id} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}
-                      className={`flex gap-3 ${msg.role === "user" ? "flex-row-reverse" : ""}`}>
-                      <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 shadow-lg ${msg.role === "ai" ? "bg-gradient-to-br from-red-500 to-orange-600 shadow-red-500/20" : "bg-gradient-to-br from-blue-500 to-cyan-500 shadow-blue-500/20"
+                      className={`flex gap-4 ${msg.role === "user" ? "flex-row-reverse" : ""}`}>
+                      <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${msg.role === "ai" ? "bg-white/5 border border-white/10" : "bg-blue-600"
                         }`}>
-                        {msg.role === "ai" ? <Bot className="w-5 h-5 text-white" /> : <User className="w-5 h-5 text-white" />}
+                        {msg.role === "ai" ? <Bot className="w-5 h-5 text-slate-300" /> : <User className="w-5 h-5 text-white" />}
                       </div>
-                      <div className={`max-w-[80%] rounded-2xl px-5 py-4 ${msg.role === "ai" ? "bg-white/[0.04] border border-white/[0.08]" : "bg-blue-500/10 border border-blue-500/20"
+                      <div className={`max-w-[85%] rounded-2xl px-6 py-4 ${msg.role === "ai" ? "bg-white/[0.03] border border-white/[0.05]" : "bg-blue-600/10 border border-blue-500/20"
                         }`}>
-                        <p className="text-sm text-slate-200 leading-relaxed whitespace-pre-wrap">{msg.content}</p>
+                        <p className="text-[15px] text-slate-200 leading-relaxed whitespace-pre-wrap">{msg.content}</p>
                         {msg.role === "ai" && msg.critique && (
-                          <div className="mt-4 bg-red-500/5 border border-red-500/10 rounded-xl px-4 py-3">
-                            <p className="text-[10px] font-bold text-red-400 uppercase tracking-widest mb-1.5 flex items-center gap-1.5">
-                              <AlertTriangle className="w-3 h-3" /> Staff Engineer Critique
+                          <div className="mt-4 bg-purple-500/5 border border-purple-500/10 rounded-xl px-5 py-4">
+                            <p className="text-[11px] font-bold text-purple-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                              <Sparkles className="w-3.5 h-3.5" /> Interviewer Feedback
                             </p>
-                            <p className="text-xs text-red-200/70 leading-relaxed">{msg.critique}</p>
+                            <p className="text-sm text-purple-200/80 leading-relaxed">{msg.critique}</p>
                           </div>
                         )}
                         {msg.role === "ai" && msg.score !== undefined && msg.score > 0 && (
                           <div className="mt-3 flex items-center gap-2">
-                            <Zap className="w-3.5 h-3.5 text-amber-400" />
-                            <span className="text-xs font-bold text-amber-400">Architecture Score: {msg.score}/100</span>
+                            <Zap className="w-4 h-4 text-emerald-400" />
+                            <span className="text-xs font-bold text-emerald-400">Response Quality Score: {msg.score}/100</span>
                           </div>
                         )}
-                        <p className="text-[10px] text-slate-600 mt-2 font-medium">
+                        <p className="text-[11px] text-slate-500 mt-3 font-medium">
                           {msg.timestamp.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                         </p>
                       </div>
@@ -287,13 +287,13 @@ export default function InterviewModal({ isOpen, onClose, targetRole, resumeSumm
                   ))}
 
                   {isLoading && (
-                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex gap-3">
-                      <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-red-500 to-orange-600 flex items-center justify-center shrink-0 shadow-lg shadow-red-500/20">
-                        <Bot className="w-5 h-5 text-white" />
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex gap-4">
+                      <div className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
+                        <Bot className="w-5 h-5 text-slate-300" />
                       </div>
-                      <div className="bg-white/[0.04] border border-white/[0.08] rounded-2xl px-5 py-4 flex items-center gap-3">
+                      <div className="bg-white/[0.02] border border-white/[0.05] rounded-2xl px-6 py-4 flex items-center gap-3">
                         <Loader2 className="w-4 h-4 text-slate-400 animate-spin" />
-                        <span className="text-sm text-slate-400 font-medium">Interrogating your response...</span>
+                        <span className="text-[15px] text-slate-400 font-medium">Thinking...</span>
                       </div>
                     </motion.div>
                   )}
@@ -307,38 +307,38 @@ export default function InterviewModal({ isOpen, onClose, targetRole, resumeSumm
                 </div>
 
                 {/* Chat Input */}
-                <div className="px-5 py-4 border-t border-white/[0.06] bg-white/[0.015] shrink-0">
-                  <div className="flex items-end gap-3">
+                <div className="px-6 py-5 border-t border-white/[0.04] bg-white/[0.01] shrink-0">
+                  <div className="flex items-end gap-3 max-w-5xl mx-auto">
                     <textarea ref={inputRef} value={userInput} onChange={(e) => setUserInput(e.target.value)} onKeyDown={handleKeyDown}
-                      placeholder="Defend your architecture... (Shift+Enter for newline)" rows={2}
-                      className="flex-1 bg-white/[0.04] border border-white/[0.08] rounded-2xl px-5 py-3.5 text-sm text-white placeholder:text-slate-600 focus:outline-none focus:border-blue-500/40 resize-none custom-scrollbar transition-colors"
+                      placeholder="Type your response... (Shift+Enter for newline)" rows={2}
+                      className="flex-1 bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-[15px] text-white placeholder:text-slate-500 focus:outline-none focus:border-blue-500/40 resize-none custom-scrollbar transition-colors"
                     />
                     <button onClick={handleSend} disabled={isLoading || !userInput.trim()}
-                      className="w-12 h-12 bg-blue-600 hover:bg-blue-500 disabled:bg-slate-800 disabled:text-slate-600 text-white rounded-2xl flex items-center justify-center transition-all shadow-lg shadow-blue-500/20 disabled:shadow-none shrink-0">
-                      {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
+                      className="w-14 h-14 bg-blue-600 hover:bg-blue-500 disabled:bg-slate-800 disabled:text-slate-600 text-white rounded-2xl flex items-center justify-center transition-all disabled:shadow-none shrink-0">
+                      {isLoading ? <Loader2 className="w-6 h-6 animate-spin" /> : <Send className="w-6 h-6" />}
                     </button>
                   </div>
                 </div>
               </div>
 
               {/* Right: Whiteboard */}
-              <div className="w-[420px] flex flex-col bg-[#080C16] shrink-0">
-                <div className="px-6 py-3 border-b border-white/[0.04] bg-white/[0.01] flex items-center justify-between shrink-0">
-                  <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500 flex items-center gap-2">
-                    <Code2 className="w-3.5 h-3.5" /> Whiteboard / Scratchpad
+              <div className="w-[450px] flex flex-col bg-[#050810] shrink-0 border-l border-white/[0.05]">
+                <div className="px-6 py-4 border-b border-white/[0.04] bg-transparent flex items-center justify-between shrink-0">
+                  <p className="text-xs font-semibold tracking-wide text-slate-400 flex items-center gap-2">
+                    <Code2 className="w-4 h-4" /> Scratchpad
                   </p>
-                  <button onClick={() => setWhiteboardText("")} className="text-[10px] font-bold text-slate-600 hover:text-slate-400 transition-colors uppercase tracking-wider">Clear</button>
+                  <button onClick={() => setWhiteboardText("")} className="text-[10px] font-bold text-slate-500 hover:text-white transition-colors uppercase tracking-wider">Clear</button>
                 </div>
                 <textarea value={whiteboardText} onChange={(e) => setWhiteboardText(e.target.value)}
-                  placeholder={`Draft your architecture notes here...\n\n┌─────────────┐     ┌──────────────┐\n│   Client     │────▶│  API Gateway │\n└─────────────┘     └──────┬───────┘\n                           │\n                    ┌──────▼───────┐\n                    │  Auth Service│\n                    └──────────────┘`}
-                  className="flex-1 bg-transparent text-sm text-slate-300 placeholder:text-slate-700 font-mono leading-relaxed p-6 focus:outline-none resize-none custom-scrollbar"
+                  placeholder={`Draft your notes here...\n\n┌─────────────┐     ┌──────────────┐\n│   Client     │────▶│  API Gateway │\n└─────────────┘     └──────┬───────┘\n                           │\n                    ┌──────▼───────┐\n                    │  Auth Service│\n                    └──────────────┘`}
+                  className="flex-1 bg-transparent text-[14px] text-slate-300 placeholder:text-slate-700 font-mono leading-relaxed p-6 focus:outline-none resize-none custom-scrollbar"
                   spellCheck={false}
                 />
-                <div className="px-6 py-4 border-t border-white/[0.04] bg-white/[0.01] shrink-0">
-                  <div className="flex items-start gap-2">
-                    <Sparkles className="w-3.5 h-3.5 text-purple-400 shrink-0 mt-0.5" />
-                    <p className="text-[11px] text-slate-500 leading-relaxed">
-                      <span className="text-purple-400 font-bold">Pro tip:</span> Your whiteboard notes are automatically included with your response for deeper architectural context.
+                <div className="px-6 py-5 border-t border-white/[0.04] bg-transparent shrink-0">
+                  <div className="flex items-start gap-2.5">
+                    <Sparkles className="w-4 h-4 text-blue-400 shrink-0 mt-0.5" />
+                    <p className="text-[12px] text-slate-400 leading-relaxed">
+                      <span className="text-blue-400 font-bold">Pro tip:</span> Your whiteboard notes are automatically included with your response for deeper context.
                     </p>
                   </div>
                 </div>
