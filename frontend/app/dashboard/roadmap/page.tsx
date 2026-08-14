@@ -21,7 +21,7 @@ export default function RoadmapView() {
     setError(null);
 
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/roadmap`, {
+      const res = await fetch(`https://gdg-skillpath.onrender.com/api/roadmap`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

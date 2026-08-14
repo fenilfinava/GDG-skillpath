@@ -32,7 +32,7 @@ export default function ResumeUpload() {
       const formData = new FormData();
       formData.append('file', file);
 
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/extract`, {
+      const res = await fetch(`https://gdg-skillpath.onrender.com/api/extract`, {
         method: 'POST',
         body: formData,
       });

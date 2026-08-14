@@ -87,7 +87,7 @@ export default function SignUpPage() {
       }
 
       // 2. Fallback to FastAPI Backend API (only if Supabase is not configured)
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/auth/signup`, {
+      const res = await fetch(`https://gdg-skillpath.onrender.com/api/auth/signup`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
