@@ -102,7 +102,7 @@ export default function InterviewModal({ isOpen, onClose, targetRole, resumeSumm
       };
 
       try {
-        const res = await fetch("http://localhost:8000/api/interview", {
+        const res = await fetch("https://gdg-skillpath.onrender.com/api/interview", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
