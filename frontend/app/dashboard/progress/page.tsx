@@ -33,20 +33,20 @@ export default function ProgressDashboard() {
     });
     realTotalHours = Math.round(realTotalHours);
 
-    // Distribute real hours across the week chart deterministically
-    const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-    const activity = days.map(d => ({ name: d, hours: 0 }));
+    // Create the last 7 days array ending with today
+    const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const activity = [];
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      const name = i === 0 ? 'Today' : dayNames[d.getDay()];
+      activity.push({ name, hours: 0 });
+    }
     
+    // Since we don't track historical completion dates yet, 
+    // we assign all completed hours to Today.
     if (realTotalHours > 0) {
-      let remaining = realTotalHours;
-      // Start from the most recent days (Sun, Sat, Fri...)
-      let i = 6;
-      while (remaining > 0) {
-        const chunk = Math.min(remaining, Math.max(1, Math.ceil(realTotalHours / 4)));
-        activity[i].hours += chunk;
-        remaining -= chunk;
-        i = (i - 1 + 7) % 7;
-      }
+      activity[6].hours = realTotalHours;
     }
 
     return { 
