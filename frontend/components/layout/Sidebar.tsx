@@ -6,9 +6,11 @@ import { LayoutDashboard, FileText, Target, Map, Video, Settings, BookOpen, Brai
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
 
+import { useResume } from '@/lib/ResumeContext';
+
 const navItems = [
   { href: '/dashboard', label: 'Overview', icon: LayoutDashboard },
-  { href: '/dashboard/resume', label: 'Resume Review', icon: FileText },
+  { href: '/dashboard/resume', label: 'Upload Resume', icon: FileText },
   { href: '/dashboard/skill-gap', label: 'Skill Gap', icon: Target },
   { href: '/dashboard/roadmap', label: 'My Roadmap', icon: Map },
   { href: '/dashboard/interview', label: 'Interview Prep', icon: Video },
@@ -19,18 +21,7 @@ export default function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
-  const [user, setUser] = useState<{ name: string; email: string; targetRole: string } | null>(null);
-
-  useEffect(() => {
-    try {
-      const stored = localStorage.getItem('skillpath_user');
-      if (stored) {
-        setUser(JSON.parse(stored));
-      }
-    } catch (e) {
-      console.error(e);
-    }
-  }, []);
+  const { hasData, userName: contextUserName, targetRole: contextTargetRole } = useResume();
 
   const handleLogout = () => {
     localStorage.removeItem('skillpath_token');
@@ -38,8 +29,8 @@ export default function Sidebar() {
     router.push('/login');
   };
 
-  const userName = user?.name || 'Developer User';
-  const userRole = user?.targetRole || 'Pro Member';
+  const userName = contextUserName || 'Developer User';
+  const userRole = contextTargetRole || 'Pro Member';
   const avatarSeed = encodeURIComponent(userName);
 
   return (
@@ -75,6 +66,11 @@ export default function Sidebar() {
           const Icon = item.icon;
           const isActive = pathname === item.href || (item.href !== '/dashboard' && pathname?.startsWith(item.href));
           
+          let displayLabel = item.label;
+          if (item.href === '/dashboard/resume' && hasData) {
+            displayLabel = 'Update Resume';
+          }
+          
           return (
             <Link 
               key={item.href}
@@ -108,7 +104,7 @@ export default function Sidebar() {
                  />
               )}
               <Icon className={cn("w-5 h-5 relative z-10 transition-colors duration-300", isActive ? "text-blue-400" : "text-slate-500 group-hover:text-slate-300")} />
-              <span className="relative z-10">{item.label}</span>
+              <span className="relative z-10">{displayLabel}</span>
             </Link>
           );
         })}

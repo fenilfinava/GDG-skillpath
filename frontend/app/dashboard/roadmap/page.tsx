@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 
 export default function RoadmapView() {
-  const { skills, targetRole, roadmapPhases, hasData, setRoadmapData, toggleTaskComplete } = useResume();
+  const { skills, targetRole, roadmapPhases, hasData, isLoading: isContextLoading, setRoadmapData, toggleTaskComplete } = useResume();
   const [selectedTask, setSelectedTask] = useState<{title: string, type: string, duration: string, rationale?: string, completed?: boolean, phaseId?: string, taskId?: string} | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -57,6 +57,21 @@ export default function RoadmapView() {
       default: return <BookOpen className="w-4 h-4" />;
     }
   };
+
+  // Context Loading state
+  if (isContextLoading) {
+    return (
+      <div className="max-w-6xl mx-auto flex flex-col items-center justify-center min-h-[60vh] text-center">
+        <div className="w-20 h-20 relative mb-8">
+          <div className="absolute inset-0 border-4 border-white/10 rounded-full"></div>
+          <div className="absolute inset-0 border-4 border-blue-500 rounded-full border-t-transparent animate-spin"></div>
+          <Loader2 className="w-8 h-8 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-blue-400 animate-pulse" />
+        </div>
+        <h2 className="text-2xl font-bold text-white mb-2">Loading your details...</h2>
+        <p className="text-slate-400 text-base">Fetching your personalized learning path from the database.</p>
+      </div>
+    );
+  }
 
   // Empty state: no resume uploaded yet
   if (!hasData) {
