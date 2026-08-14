@@ -6,7 +6,7 @@ import { motion } from 'framer-motion';
 import { useMemo } from 'react';
 
 export default function DashboardOverview() {
-  const { gaps, targetRole, hasData, roadmapPhases, interviewScore } = useResume();
+  const { gaps, targetRole, hasData, roadmapPhases, interviewScore, userName } = useResume();
 
   // Calculate readiness score dynamically
   const { readinessScore, completedTasks, totalTasks } = useMemo(() => {
@@ -74,7 +74,7 @@ export default function DashboardOverview() {
           <span className="text-xs font-bold text-blue-300 uppercase tracking-widest">{completedTasks} Tasks Completed</span>
         </div>
         <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white via-slate-200 to-slate-500 tracking-tight">
-          Welcome back, Candidate.
+          Welcome back, {userName}.
         </h1>
         <p className="text-lg text-slate-400 max-w-2xl mt-2 font-medium">
           You're on track to become a <span className="text-blue-400 font-bold">{targetRole}</span>. Keep up the momentum.

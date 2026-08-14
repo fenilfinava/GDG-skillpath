@@ -40,6 +40,7 @@ export interface RoadmapPhase {
 export interface ResumeState {
   resumeId: string | null;
   roadmapId: string | null;
+  userName: string;
   skills: SkillItem[];
   gaps: SkillGapItem[];
   summary: string;
@@ -74,6 +75,7 @@ export function useResume(): ResumeContextValue {
 export function ResumeProvider({ children }: { children: ReactNode }) {
   const [resumeId, setResumeId] = useState<string | null>(null);
   const [roadmapId, setRoadmapId] = useState<string | null>(null);
+  const [userName, setUserName] = useState("Candidate");
   const [skills, setSkills] = useState<SkillItem[]>([]);
   const [gaps, setGaps] = useState<SkillGapItem[]>([]);
   const [summary, setSummary] = useState("");
@@ -91,15 +93,19 @@ export function ResumeProvider({ children }: { children: ReactNode }) {
         if (!session) return;
 
         const userId = session.user.id;
+        const name = session.user.user_metadata?.full_name || session.user.email?.split('@')[0] || "Candidate";
+        setUserName(name);
 
         // Load Resume
-        const { data: resumeData } = await supabase
+        const { data: resumeData, error: resumeErr } = await supabase
           .from("resumes")
           .select("*")
           .eq("user_id", userId)
           .order("created_at", { ascending: false })
           .limit(1)
-          .single();
+          .maybeSingle();
+
+        if (resumeErr) console.error("Resume fetch error:", resumeErr);
 
         if (resumeData) {
           setResumeId(resumeData.id);
@@ -123,13 +129,15 @@ export function ResumeProvider({ children }: { children: ReactNode }) {
         }
 
         // Load Roadmap
-        const { data: roadmapData } = await supabase
+        const { data: roadmapData, error: roadmapErr } = await supabase
           .from("roadmaps")
           .select("*")
           .eq("user_id", userId)
           .order("updated_at", { ascending: false })
           .limit(1)
-          .single();
+          .maybeSingle();
+
+        if (roadmapErr) console.error("Roadmap fetch error:", roadmapErr);
 
         if (roadmapData) {
           setRoadmapId(roadmapData.id);
@@ -218,7 +226,7 @@ export function ResumeProvider({ children }: { children: ReactNode }) {
 
   const toggleTaskComplete = useCallback(async (phaseId: string, taskId: string) => {
     setRoadmapPhases((prev) => {
-      const newPhases = prev.map((phase) =>
+      return prev.map((phase) =>
         phase.id === phaseId
           ? {
               ...phase,
@@ -228,29 +236,36 @@ export function ResumeProvider({ children }: { children: ReactNode }) {
             }
           : phase
       );
-      
-      // Async update in background
-      if (roadmapId) {
-        supabase.auth.getSession().then(({ data: { session } }) => {
-          if (session) {
-            supabase
-              .from("roadmaps")
-              .update({ phases: newPhases, updated_at: new Date().toISOString() })
-              .eq("id", roadmapId)
-              .then(); // fire and forget
-          }
-        });
-      }
-      
-      return newPhases;
     });
-  }, [roadmapId]);
+  }, []);
+
+  // Debounced Sync for Roadmap Phases
+  useEffect(() => {
+    if (!roadmapId || roadmapPhases.length === 0) return;
+    
+    const timeout = setTimeout(() => {
+      supabase.auth.getSession().then(({ data: { session } }) => {
+        if (session) {
+          supabase
+            .from("roadmaps")
+            .update({ phases: roadmapPhases, updated_at: new Date().toISOString() })
+            .eq("id", roadmapId)
+            .then(({ error }) => {
+              if (error) console.error("Error auto-saving roadmap:", error);
+            });
+        }
+      });
+    }, 1000); // Save 1 second after last change
+    
+    return () => clearTimeout(timeout);
+  }, [roadmapPhases, roadmapId]);
 
   return (
     <ResumeContext.Provider
       value={{
         resumeId,
         roadmapId,
+        userName,
         skills,
         gaps,
         summary,
