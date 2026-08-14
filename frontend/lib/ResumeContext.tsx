@@ -1,5 +1,6 @@
 "use client";
-import { createContext, useContext, useState, useCallback, type ReactNode } from "react";
+import { createContext, useContext, useState, useCallback, useEffect, type ReactNode } from "react";
+import { supabase } from "@/lib/supabase";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -37,6 +38,8 @@ export interface RoadmapPhase {
 }
 
 export interface ResumeState {
+  resumeId: string | null;
+  roadmapId: string | null;
   skills: SkillItem[];
   gaps: SkillGapItem[];
   summary: string;
@@ -44,6 +47,7 @@ export interface ResumeState {
   roadmapPhases: RoadmapPhase[];
   interviewScore: number;
   hasData: boolean;
+  isLoading: boolean;
 }
 
 interface ResumeContextValue extends ResumeState {
@@ -68,6 +72,8 @@ export function useResume(): ResumeContextValue {
 // Provider
 // ---------------------------------------------------------------------------
 export function ResumeProvider({ children }: { children: ReactNode }) {
+  const [resumeId, setResumeId] = useState<string | null>(null);
+  const [roadmapId, setRoadmapId] = useState<string | null>(null);
   const [skills, setSkills] = useState<SkillItem[]>([]);
   const [gaps, setGaps] = useState<SkillGapItem[]>([]);
   const [summary, setSummary] = useState("");
@@ -75,44 +81,144 @@ export function ResumeProvider({ children }: { children: ReactNode }) {
   const [roadmapPhases, setRoadmapPhases] = useState<RoadmapPhase[]>([]);
   const [interviewScore, setInterviewScoreState] = useState(0);
   const [hasData, setHasData] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Load Data on Mount
+  useEffect(() => {
+    const loadUserData = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) return;
+
+        const userId = session.user.id;
+
+        // Load Resume
+        const { data: resumeData } = await supabase
+          .from("resumes")
+          .select("*")
+          .eq("user_id", userId)
+          .order("created_at", { ascending: false })
+          .limit(1)
+          .single();
+
+        if (resumeData) {
+          setResumeId(resumeData.id);
+          setSkills(resumeData.skills || []);
+          setGaps(resumeData.skill_gaps || []);
+          setSummary(resumeData.summary || "");
+          setHasData(true);
+          
+          const summaryLower = (resumeData.summary || "").toLowerCase();
+          if (summaryLower.includes("full stack") || summaryLower.includes("fullstack")) {
+            setTargetRole("Full Stack Developer");
+          } else if (summaryLower.includes("machine learning") || summaryLower.includes("ml engineer")) {
+            setTargetRole("Machine Learning Engineer");
+          } else if (summaryLower.includes("data analyst") || summaryLower.includes("data science")) {
+            setTargetRole("Data Analyst");
+          } else if (summaryLower.includes("frontend") || summaryLower.includes("front-end")) {
+            setTargetRole("Frontend Developer");
+          } else if (summaryLower.includes("backend") || summaryLower.includes("back-end")) {
+            setTargetRole("Backend Developer");
+          }
+        }
+
+        // Load Roadmap
+        const { data: roadmapData } = await supabase
+          .from("roadmaps")
+          .select("*")
+          .eq("user_id", userId)
+          .order("updated_at", { ascending: false })
+          .limit(1)
+          .single();
+
+        if (roadmapData) {
+          setRoadmapId(roadmapData.id);
+          setRoadmapPhases(roadmapData.phases || []);
+          if(roadmapData.target_role) setTargetRole(roadmapData.target_role);
+        }
+      } catch (err) {
+        console.error("Error loading user data:", err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadUserData();
+  }, []);
 
   const setExtractedData = useCallback(
-    (data: { skills: SkillItem[]; gaps: SkillGapItem[]; summary: string }) => {
+    async (data: { skills: SkillItem[]; gaps: SkillGapItem[]; summary: string }) => {
       setSkills(data.skills || []);
       setGaps(data.gaps || []);
       setSummary(data.summary || "");
       setHasData(true);
 
-      // Try to infer target role from the summary text
+      let newRole = "Software Development Engineer";
       const summaryLower = (data.summary || "").toLowerCase();
-      if (summaryLower.includes("full stack") || summaryLower.includes("fullstack")) {
-        setTargetRole("Full Stack Developer");
-      } else if (summaryLower.includes("machine learning") || summaryLower.includes("ml engineer")) {
-        setTargetRole("Machine Learning Engineer");
-      } else if (summaryLower.includes("data analyst") || summaryLower.includes("data science")) {
-        setTargetRole("Data Analyst");
-      } else if (summaryLower.includes("frontend") || summaryLower.includes("front-end")) {
-        setTargetRole("Frontend Developer");
-      } else if (summaryLower.includes("backend") || summaryLower.includes("back-end")) {
-        setTargetRole("Backend Developer");
-      } else {
-        setTargetRole("Software Development Engineer");
+      if (summaryLower.includes("full stack") || summaryLower.includes("fullstack")) newRole = "Full Stack Developer";
+      else if (summaryLower.includes("machine learning") || summaryLower.includes("ml engineer")) newRole = "Machine Learning Engineer";
+      else if (summaryLower.includes("data analyst") || summaryLower.includes("data science")) newRole = "Data Analyst";
+      else if (summaryLower.includes("frontend") || summaryLower.includes("front-end")) newRole = "Frontend Developer";
+      else if (summaryLower.includes("backend") || summaryLower.includes("back-end")) newRole = "Backend Developer";
+      
+      setTargetRole(newRole);
+
+      // Persist to Supabase
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        const { data: insertedData, error } = await supabase
+          .from("resumes")
+          .insert({
+            user_id: session.user.id,
+            skills: data.skills || [],
+            skill_gaps: data.gaps || [],
+            summary: data.summary || ""
+          })
+          .select()
+          .single();
+          
+        if (insertedData) setResumeId(insertedData.id);
+        if (error) console.error("Error saving resume to Supabase:", error);
       }
     },
     []
   );
 
-  const setRoadmapData = useCallback((phases: RoadmapPhase[]) => {
+  const setRoadmapData = useCallback(async (phases: RoadmapPhase[]) => {
     setRoadmapPhases(phases);
-  }, []);
+    
+    // Persist to Supabase
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session) {
+      if (roadmapId) {
+        await supabase
+          .from("roadmaps")
+          .update({ phases, updated_at: new Date().toISOString() })
+          .eq("id", roadmapId);
+      } else {
+        const { data: insertedData, error } = await supabase
+          .from("roadmaps")
+          .insert({
+            user_id: session.user.id,
+            target_role: targetRole,
+            phases: phases
+          })
+          .select()
+          .single();
+          
+        if (insertedData) setRoadmapId(insertedData.id);
+        if (error) console.error("Error saving roadmap to Supabase:", error);
+      }
+    }
+  }, [roadmapId, targetRole]);
 
   const setInterviewScore = useCallback((score: number) => {
     setInterviewScoreState(score);
   }, []);
 
-  const toggleTaskComplete = useCallback((phaseId: string, taskId: string) => {
-    setRoadmapPhases((prev) =>
-      prev.map((phase) =>
+  const toggleTaskComplete = useCallback(async (phaseId: string, taskId: string) => {
+    setRoadmapPhases((prev) => {
+      const newPhases = prev.map((phase) =>
         phase.id === phaseId
           ? {
               ...phase,
@@ -121,13 +227,30 @@ export function ResumeProvider({ children }: { children: ReactNode }) {
               ),
             }
           : phase
-      )
-    );
-  }, []);
+      );
+      
+      // Async update in background
+      if (roadmapId) {
+        supabase.auth.getSession().then(({ data: { session } }) => {
+          if (session) {
+            supabase
+              .from("roadmaps")
+              .update({ phases: newPhases, updated_at: new Date().toISOString() })
+              .eq("id", roadmapId)
+              .then(); // fire and forget
+          }
+        });
+      }
+      
+      return newPhases;
+    });
+  }, [roadmapId]);
 
   return (
     <ResumeContext.Provider
       value={{
+        resumeId,
+        roadmapId,
         skills,
         gaps,
         summary,
@@ -135,6 +258,7 @@ export function ResumeProvider({ children }: { children: ReactNode }) {
         roadmapPhases,
         interviewScore,
         hasData,
+        isLoading,
         setExtractedData,
         setRoadmapData,
         setInterviewScore,
