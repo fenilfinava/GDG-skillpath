@@ -6,10 +6,22 @@ import { cn } from "@/lib/utils";
 
 export function AIAssistantWidget() {
   const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState<Array<{ sender: "user" | "bot"; text: string }>>([
-    { sender: "bot", text: "Hi Aditi! I'm your career assistant. How can I help you accelerate your path to Software Development Engineer today?" }
-  ]);
+  const [messages, setMessages] = useState<Array<{ sender: "user" | "bot"; text: string }>>([]);
   const [inputText, setInputText] = useState("");
+
+  React.useEffect(() => {
+    let userName = "there";
+    try {
+      const stored = localStorage.getItem('skillpath_user');
+      if (stored) {
+        const u = JSON.parse(stored);
+        if (u.name) userName = u.name.split(' ')[0];
+      }
+    } catch {}
+    setMessages([
+      { sender: "bot", text: `Hi ${userName}! I'm your career assistant. How can I help you accelerate your tech learning path today?` }
+    ]);
+  }, []);
 
   const suggestions = [
     "Review my skill gaps",

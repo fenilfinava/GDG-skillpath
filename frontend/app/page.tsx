@@ -198,8 +198,8 @@ if __name__ == "__main__":
             <span className="text-2xl font-bold tracking-tight text-white">SkillPath</span>
           </motion.div>
           <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.6, type: "spring" }} className="flex gap-6 items-center">
-            <Link href="/dashboard" className="text-slate-400 hover:text-white font-medium transition-colors text-sm">Log in</Link>
-            <Link href="/onboarding" className="relative group overflow-hidden rounded-full p-[1px]">
+            <Link href="/login" className="text-slate-400 hover:text-white font-medium transition-colors text-sm">Log in</Link>
+            <Link href="/signup" className="relative group overflow-hidden rounded-full p-[1px]">
               <span className="absolute inset-[-200%] bg-[conic-gradient(from_0deg,#3b82f6,#8b5cf6,#06b6d4,#3b82f6)] opacity-70 group-hover:opacity-100 animate-[spin_3s_linear_infinite]" />
               <div className="relative bg-[#030712] px-6 py-2.5 rounded-full flex items-center gap-2 group-hover:bg-white/10 transition-all duration-300">
                 <span className="font-semibold text-white text-sm">Get Started</span>

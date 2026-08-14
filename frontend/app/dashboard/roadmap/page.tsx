@@ -21,7 +21,7 @@ export default function RoadmapView() {
     setError(null);
 
     try {
-      const res = await fetch('http://localhost:8000/api/roadmap', {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/roadmap`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -105,45 +105,45 @@ export default function RoadmapView() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto h-full flex flex-col">
-      <div className="mb-10 flex justify-between items-end shrink-0">
+    <div className="w-full h-full flex flex-col">
+      <div className="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-end shrink-0 gap-4">
         <div>
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">My Learning Roadmap</h2>
-          <p className="text-slate-400 text-lg">Your personalized path to becoming a <span className="text-blue-400 font-semibold">{targetRole}</span>.</p>
+          <h2 className="text-3xl md:text-4xl font-bold text-white mb-2 tracking-tight">My Learning Roadmap</h2>
+          <p className="text-slate-400 text-base md:text-lg">Your personalized path to becoming a <span className="text-blue-400 font-semibold">{targetRole}</span>.</p>
         </div>
       </div>
 
-      <div className="flex-1 overflow-x-auto pb-6 custom-scrollbar">
-        <div className="flex gap-8 h-full min-w-max px-2">
+      <div className="flex-1 overflow-x-auto pb-8 pt-1 custom-scrollbar -mx-4 px-4">
+        <div className="flex gap-6 h-full min-w-max pr-16 pl-2">
           {roadmapPhases.map((phase, phaseIndex) => (
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: phaseIndex * 0.15 }}
+              transition={{ delay: phaseIndex * 0.12 }}
               key={phase.id} 
-              className="w-[340px] flex flex-col h-full max-h-[75vh]"
+              className="w-[340px] shrink-0 flex flex-col h-[calc(100vh-260px)] min-h-[520px]"
             >
-              <div className="flex items-center gap-3 mb-5">
+              <div className="flex items-center gap-3 mb-4 shrink-0">
                 <div className={cn(
-                  "w-3.5 h-3.5 rounded-full shadow-lg",
+                  "w-3.5 h-3.5 rounded-full shadow-lg shrink-0",
                   phase.status === 'completed' ? "bg-green-500 shadow-green-500/50" :
                   phase.status === 'in-progress' ? "bg-blue-500 animate-pulse shadow-blue-500/50" :
                   "bg-slate-700"
                 )} />
-                <h3 className="font-bold text-xl text-white tracking-tight">{phase.title}</h3>
+                <h3 className="font-bold text-xl text-white tracking-tight truncate">{phase.title}</h3>
               </div>
 
               <div className={cn(
-                "flex-1 bg-[#030712]/40 backdrop-blur-md rounded-[2rem] p-5 border overflow-hidden space-y-4 shadow-xl relative",
-                phase.status === 'in-progress' ? "border-blue-500/30 bg-blue-500/5 shadow-[0_0_30px_rgba(59,130,246,0.05)]" : "border-white/5"
+                "flex-1 bg-[#030712]/50 backdrop-blur-md rounded-[2rem] border shadow-2xl relative overflow-hidden",
+                phase.status === 'in-progress' ? "border-blue-500/30 bg-blue-500/5 shadow-[0_0_30px_rgba(59,130,246,0.08)]" : "border-white/10"
               )}>
                 <div className="absolute inset-0 bg-grid opacity-[0.03] pointer-events-none"></div>
-                <div className="absolute inset-0 overflow-y-auto p-5 space-y-4 custom-scrollbar">
+                <div className="absolute inset-0 overflow-y-auto p-5 pb-12 space-y-4 custom-scrollbar">
                 {phase.tasks.map((task, taskIndex) => (
                   <motion.div 
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: (phaseIndex * 0.15) + (taskIndex * 0.1) }}
+                    transition={{ delay: (phaseIndex * 0.1) + (taskIndex * 0.08) }}
                     key={task.id}
                     onClick={() => setSelectedTask({ ...task, phaseId: phase.id, taskId: task.id })}
                     className={cn(
@@ -158,9 +158,9 @@ export default function RoadmapView() {
                         {getTaskIcon(task.type)} <span>{task.type}</span>
                       </span>
                       {task.completed ? (
-                        <CheckCircle2 className="w-6 h-6 text-green-400" />
+                        <CheckCircle2 className="w-6 h-6 text-green-400 shrink-0" />
                       ) : phase.status !== 'locked' ? (
-                        <Circle className="w-6 h-6 text-slate-500 group-hover:text-blue-400 transition-colors" />
+                        <Circle className="w-6 h-6 text-slate-500 group-hover:text-blue-400 transition-colors shrink-0" />
                       ) : null}
                     </div>
                     <h4 className={cn("font-bold text-lg mb-3 leading-tight", task.completed ? "text-slate-400 line-through" : "text-white")}>

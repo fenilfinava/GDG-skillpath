@@ -1,18 +1,51 @@
 "use client";
-import { roles } from '@/lib/constants';
-import { useResume } from '@/lib/ResumeContext';
-import { User, Bell, Shield, LogOut } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
+import { User, Bell, Shield, LogOut } from 'lucide-react';
+import { useResume } from '@/lib/ResumeContext';
+import { roles } from '@/lib/constants';
 
 export default function SettingsPage() {
   const { targetRole } = useResume();
   const [formData, setFormData] = useState({
-    name: 'Candidate',
-    email: 'candidate@email.com',
+    name: 'Developer User',
+    email: 'developer@example.com',
     targetRole: 'sde',
     hoursPerWeek: 15,
   });
+  const [savedMsg, setSavedMsg] = useState(false);
+
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem('skillpath_user');
+      if (stored) {
+        const u = JSON.parse(stored);
+        setFormData(prev => ({
+          ...prev,
+          name: u.name || prev.name,
+          email: u.email || prev.email,
+          targetRole: u.targetRole || prev.targetRole
+        }));
+      }
+    } catch {}
+  }, []);
+
+  const handleSave = () => {
+    try {
+      const stored = localStorage.getItem('skillpath_user');
+      const current = stored ? JSON.parse(stored) : {};
+      const updated = {
+        ...current,
+        name: formData.name,
+        email: formData.email,
+        targetRole: formData.targetRole,
+      };
+      localStorage.setItem('skillpath_user', JSON.stringify(updated));
+      setSavedMsg(true);
+      setTimeout(() => setSavedMsg(false), 2000);
+      window.location.reload();
+    } catch {}
+  };
 
   return (
     <div className="max-w-5xl mx-auto">
@@ -108,8 +141,12 @@ export default function SettingsPage() {
               </div>
             </div>
 
-            <div className="mt-10 flex justify-end relative z-10">
-              <button className="bg-blue-600 hover:bg-blue-500 text-white px-8 py-3.5 rounded-xl font-bold transition-all shadow-[0_0_20px_rgba(37,99,235,0.4)] hover:shadow-[0_0_30px_rgba(37,99,235,0.6)]">
+            <div className="mt-10 flex items-center justify-end gap-4 relative z-10">
+              {savedMsg && <span className="text-sm text-emerald-400 font-semibold">Preferences saved!</span>}
+              <button 
+                onClick={handleSave}
+                className="bg-blue-600 hover:bg-blue-500 text-white px-8 py-3.5 rounded-xl font-bold transition-all shadow-[0_0_20px_rgba(37,99,235,0.4)] hover:shadow-[0_0_30px_rgba(37,99,235,0.6)] cursor-pointer"
+              >
                 Save Preferences
               </button>
             </div>

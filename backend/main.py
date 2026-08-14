@@ -1,7 +1,11 @@
 import os
 import io
+import json
+import hashlib
+import uuid
+from datetime import datetime
 from typing import List, Optional
-from fastapi import FastAPI, File, UploadFile, HTTPException
+from fastapi import FastAPI, File, UploadFile, HTTPException, Header
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 import pypdf
@@ -26,10 +30,7 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:3000",
-        "http://127.0.0.1:3000",
-    ],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -146,9 +147,58 @@ class InterviewQuestion(BaseModel):
 
 class InterviewResponse(BaseModel):
     interrogationQuestion: str = Field(description="Ruthless Staff Engineer follow-up interrogation question")
-    critique: str = Field(description="Staff Engineer critique highlighting flaws, single points of failure, or bottlenecks")
-    score: int = Field(description="Architectural soundness score from 0 to 100")
-    questions: List[InterviewQuestion] = Field(description="Suggested list of interview questions for target role")
+# 4. Authentication Schemas
+class SignupRequest(BaseModel):
+    name: str = Field(description="Full name of the candidate")
+    email: str = Field(description="Email address")
+    password: str = Field(description="Account password")
+    targetRole: Optional[str] = Field(default="Software Engineer", description="Target role preference")
+
+class LoginRequest(BaseModel):
+    email: str = Field(description="Email address")
+    password: str = Field(description="Account password")
+
+class UserProfile(BaseModel):
+    id: str
+    name: str
+    email: str
+    targetRole: str
+    createdAt: str
+
+class AuthResponse(BaseModel):
+    status: str
+    message: str
+    token: str
+    user: UserProfile
+
+
+# -----------------------------------------------------------------------------
+# User Storage Helpers (Local JSON Data Persistence)
+# -----------------------------------------------------------------------------
+DATA_DIR = os.path.join(BASE_DIR, "data")
+USERS_FILE = os.path.join(DATA_DIR, "users.json")
+
+def _init_storage():
+    os.makedirs(DATA_DIR, exist_ok=True)
+    if not os.path.exists(USERS_FILE):
+        with open(USERS_FILE, "w") as f:
+            json.dump({}, f)
+
+def _hash_password(password: str) -> str:
+    return hashlib.sha256(password.encode("utf-8")).hexdigest()
+
+def _load_users() -> dict:
+    _init_storage()
+    try:
+        with open(USERS_FILE, "r") as f:
+            return json.load(f)
+    except Exception:
+        return {}
+
+def _save_users(users: dict):
+    _init_storage()
+    with open(USERS_FILE, "w") as f:
+        json.dump(users, f, indent=2)
 
 
 # -----------------------------------------------------------------------------
@@ -165,6 +215,106 @@ def read_root():
 @app.get("/health")
 def health_check():
     return {"status": "ok"}
+
+
+# --- Authentication Endpoints ---
+
+@app.post("/api/auth/signup", response_model=AuthResponse)
+def signup(req: SignupRequest):
+    email_clean = req.email.strip().lower()
+    if not email_clean or "@" not in email_clean:
+        raise HTTPException(status_code=400, detail="Please provide a valid email address.")
+    if len(req.password) < 6:
+        raise HTTPException(status_code=400, detail="Password must be at least 6 characters long.")
+    
+    users = _load_users()
+    if email_clean in users:
+        raise HTTPException(status_code=400, detail="An account with this email address already exists.")
+
+    user_id = str(uuid.uuid4())
+    token = f"sp_token_{uuid.uuid4().hex}"
+    created_at = datetime.utcnow().isoformat()
+    
+    user_record = {
+        "id": user_id,
+        "name": req.name.strip(),
+        "email": email_clean,
+        "password": _hash_password(req.password),
+        "targetRole": req.targetRole or "Software Engineer",
+        "createdAt": created_at,
+        "token": token
+    }
+    
+    users[email_clean] = user_record
+    _save_users(users)
+    
+    user_profile = UserProfile(
+        id=user_id,
+        name=user_record["name"],
+        email=user_record["email"],
+        targetRole=user_record["targetRole"],
+        createdAt=created_at
+    )
+    
+    return AuthResponse(
+        status="success",
+        message="Account created successfully",
+        token=token,
+        user=user_profile
+    )
+
+
+@app.post("/api/auth/login", response_model=AuthResponse)
+def login(req: LoginRequest):
+    email_clean = req.email.strip().lower()
+    users = _load_users()
+    
+    if email_clean not in users:
+        raise HTTPException(status_code=401, detail="Invalid email or password.")
+    
+    user_record = users[email_clean]
+    if user_record["password"] != _hash_password(req.password):
+        raise HTTPException(status_code=401, detail="Invalid email or password.")
+    
+    token = f"sp_token_{uuid.uuid4().hex}"
+    user_record["token"] = token
+    users[email_clean] = user_record
+    _save_users(users)
+    
+    user_profile = UserProfile(
+        id=user_record["id"],
+        name=user_record["name"],
+        email=user_record["email"],
+        targetRole=user_record.get("targetRole", "Software Engineer"),
+        createdAt=user_record.get("createdAt", "")
+    )
+    
+    return AuthResponse(
+        status="success",
+        message="Logged in successfully",
+        token=token,
+        user=user_profile
+    )
+
+
+@app.get("/api/auth/me", response_model=UserProfile)
+def get_current_user(authorization: Optional[str] = Header(None)):
+    if not authorization:
+        raise HTTPException(status_code=401, detail="Authorization header missing.")
+    
+    token = authorization.replace("Bearer ", "").strip()
+    users = _load_users()
+    for user_record in users.values():
+        if user_record.get("token") == token:
+            return UserProfile(
+                id=user_record["id"],
+                name=user_record["name"],
+                email=user_record["email"],
+                targetRole=user_record.get("targetRole", "Software Engineer"),
+                createdAt=user_record.get("createdAt", "")
+            )
+            
+    raise HTTPException(status_code=401, detail="Invalid or expired session token.")
 
 
 @app.post("/api/extract", response_model=SkillExtractionResponse)
@@ -318,50 +468,3 @@ async def interview_endpoint(req: InterviewRequest):
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Groq API Error: {str(e)}")
-
-    # --- Build multi-turn conversation history for Gemini ---
-    conversation_contents: list[types.Content] = []
-
-    # Replay past conversation turns from the frontend's history array
-    for msg in req.history:
-        gemini_role = "user" if msg.role == "user" else "model"
-        conversation_contents.append(
-            types.Content(
-                role=gemini_role,
-                parts=[types.Part.from_text(text=msg.content)]
-            )
-        )
-
-    # Append the current user response as the latest turn
-    if req.userResponse and req.userResponse.strip():
-        current_prompt = req.userResponse
-    else:
-        # First turn: no user response yet, ask AI to open the interrogation
-        current_prompt = (
-            f"Begin the technical interrogation for the {req.role} role. "
-            f"Focus on {req.topic}. Analyze the candidate's project details above "
-            f"and ask your first aggressive, project-specific question."
-        )
-
-    conversation_contents.append(
-        types.Content(
-            role="user",
-            parts=[types.Part.from_text(text=current_prompt)]
-        )
-    )
-
-    # --- Call Gemini with full conversation context ---
-    try:
-        response = await client.aio.models.generate_content(
-            model="gemini-3.6-flash",
-            contents=conversation_contents,
-            config=types.GenerateContentConfig(
-                system_instruction=system_instruction,
-                response_mime_type="application/json",
-                response_schema=InterviewResponse,
-                temperature=0.5,
-            )
-        )
-        return response.parsed
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Gemini API Error during interview interrogation: {str(e)}")

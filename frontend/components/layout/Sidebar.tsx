@@ -1,8 +1,8 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { LayoutDashboard, FileText, Target, Map, Video, Settings, BookOpen, BrainCircuit } from 'lucide-react';
+import { usePathname, useRouter } from 'next/navigation';
+import { LayoutDashboard, FileText, Target, Map, Video, Settings, BookOpen, BrainCircuit, LogOut } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
 
@@ -17,7 +17,30 @@ const navItems = [
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const router = useRouter();
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const [user, setUser] = useState<{ name: string; email: string; targetRole: string } | null>(null);
+
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem('skillpath_user');
+      if (stored) {
+        setUser(JSON.parse(stored));
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem('skillpath_token');
+    localStorage.removeItem('skillpath_user');
+    router.push('/login');
+  };
+
+  const userName = user?.name || 'Developer User';
+  const userRole = user?.targetRole || 'Pro Member';
+  const avatarSeed = encodeURIComponent(userName);
 
   return (
     <motion.aside 
@@ -50,7 +73,7 @@ export default function Sidebar() {
       <nav className="flex-1 px-4 flex flex-col gap-1 relative z-10 overflow-y-auto custom-scrollbar">
         {navItems.map((item, index) => {
           const Icon = item.icon;
-          const isActive = pathname === item.href || pathname?.startsWith(`${item.href}/`);
+          const isActive = pathname === item.href || (item.href !== '/dashboard' && pathname?.startsWith(item.href));
           
           return (
             <Link 
@@ -92,17 +115,26 @@ export default function Sidebar() {
       </nav>
       
       <div className="p-4 mt-auto border-t border-white/[0.02] bg-black/20">
-        <Link href="/dashboard/settings" className="flex items-center gap-3.5 px-4 py-3 rounded-2xl hover:bg-white/[0.04] transition-all cursor-pointer group mb-2">
-            <Settings className="w-5 h-5 text-slate-500 group-hover:text-white transition-colors" />
-            <span className="text-[14px] font-semibold text-slate-400 group-hover:text-white transition-colors">Settings</span>
-        </Link>
+        <div className="flex items-center justify-between gap-1 mb-2">
+          <Link href="/dashboard/settings" className="flex-1 flex items-center gap-2.5 px-3 py-2.5 rounded-xl hover:bg-white/[0.04] transition-all cursor-pointer group">
+              <Settings className="w-4 h-4 text-slate-500 group-hover:text-white transition-colors" />
+              <span className="text-[13px] font-semibold text-slate-400 group-hover:text-white transition-colors">Settings</span>
+          </Link>
+          <button onClick={handleLogout} className="flex items-center gap-1 px-2.5 py-2.5 rounded-xl hover:bg-red-500/10 text-slate-500 hover:text-red-400 transition-all cursor-pointer" title="Sign Out">
+              <LogOut className="w-4 h-4" />
+          </button>
+        </div>
 
-        <div className="flex items-center gap-3 px-3 py-3 rounded-2xl bg-white/[0.03] border border-white/[0.05] relative overflow-hidden group cursor-pointer">
+        <div className="flex items-center gap-3 px-3 py-3 rounded-2xl bg-white/[0.03] border border-white/[0.05] relative overflow-hidden group">
            <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-           <img src="https://api.dicebear.com/7.x/notionists/svg?seed=Aditi&backgroundColor=transparent" alt="Aditi" className="w-10 h-10 rounded-xl bg-white/10" />
-           <div className="relative z-10">
-            <p className="text-[13px] font-bold text-white leading-tight">Aditi Sharma</p>
-            <p className="text-[11px] font-semibold text-blue-400 leading-tight mt-0.5">Free Plan</p>
+           <img 
+            src={`https://api.dicebear.com/7.x/notionists/svg?seed=${avatarSeed}&backgroundColor=transparent`} 
+            alt={userName} 
+            className="w-9 h-9 rounded-xl bg-white/10 shrink-0" 
+           />
+           <div className="relative z-10 min-w-0 flex-1">
+            <p className="text-[13px] font-bold text-white leading-tight truncate">{userName}</p>
+            <p className="text-[11px] font-semibold text-blue-400 leading-tight mt-0.5 truncate">{userRole}</p>
           </div>
         </div>
       </div>
