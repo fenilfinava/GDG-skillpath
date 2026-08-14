@@ -5,15 +5,34 @@ import { Target, Clock, Calendar, ArrowRight, CheckCircle2 } from 'lucide-react'
 import { roles } from '@/lib/constants';
 import { cn } from '@/lib/utils';
 import { SpotlightTiltCard } from '@/components/ui/SpotlightTiltCard';
+import { supabase } from '@/lib/supabase';
+import { useEffect } from 'react';
 
 export default function OnboardingWizard() {
   const router = useRouter();
   const [step, setStep] = useState(1);
+  const [isAuthorized, setIsAuthorized] = useState(false);
   const [formData, setFormData] = useState({
     role: '',
     hours: '10',
     deadline: '3 months'
   });
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        router.push('/login');
+      } else {
+        setIsAuthorized(true);
+      }
+    };
+    checkAuth();
+  }, [router]);
+
+  if (!isAuthorized) {
+    return <div className="min-h-screen flex items-center justify-center bg-[#030712] text-white">Loading...</div>;
+  }
 
   const nextStep = () => {
     if (step < 3) setStep(step + 1);

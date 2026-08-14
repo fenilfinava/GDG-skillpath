@@ -3,8 +3,30 @@ import Sidebar from '@/components/layout/Sidebar';
 import Navbar from '@/components/layout/Navbar';
 import DashboardBackground from '@/components/layout/DashboardBackground';
 import { ResumeProvider } from '@/lib/ResumeContext';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { supabase } from '@/lib/supabase';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  const router = useRouter();
+  const [isAuthorized, setIsAuthorized] = useState(false);
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        router.push('/login');
+      } else {
+        setIsAuthorized(true);
+      }
+    };
+    checkAuth();
+  }, [router]);
+
+  if (!isAuthorized) {
+    return <div className="min-h-screen flex items-center justify-center bg-slate-900 text-white">Loading...</div>;
+  }
+
   return (
     <ResumeProvider>
       <div className="min-h-screen bg-transparent font-sans flex text-slate-100 selection:bg-blue-500/30 relative">
