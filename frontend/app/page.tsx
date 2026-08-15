@@ -103,10 +103,29 @@ function InfiniteMarquee() {
 /* ────────────────────────────────────────────
    MAIN LANDING PAGE
    ──────────────────────────────────────────── */
+import { supabase, isSupabaseConfigured } from '@/lib/supabase';
+
 export default function LandingPage() {
   const containerRef = useRef(null);
   const cursorRef = useRef(null);
   
+  const [realUserCount, setRealUserCount] = useState(1); // Base 1
+  
+  useEffect(() => {
+    const fetchStats = async () => {
+      if (isSupabaseConfigured && supabase) {
+        const { count, error } = await supabase
+          .from('user_resumes')
+          .select('*', { count: 'exact', head: true });
+        
+        if (!error && count !== null) {
+          setRealUserCount(Math.max(count, 1)); // At least 1 so it doesn't show 0
+        }
+      }
+    };
+    fetchStats();
+  }, []);
+
   const APP_URL = '/onboarding';
 
   const codeString = `import claude_ai from anthropic
@@ -481,7 +500,7 @@ if __name__ == "__main__":
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[80%] bg-blue-500/10 rounded-full blur-[120px] pointer-events-none group-hover:bg-blue-500/20 transition-all duration-700"></div>
             
             <div className="relative z-10 grid grid-cols-2 md:grid-cols-4 gap-y-12 md:gap-y-0 md:divide-x divide-white/10">
-              <AnimatedCounter target={500} suffix="+" label="Active Users" />
+              <AnimatedCounter target={realUserCount} suffix="" label="Active Users" />
               <AnimatedCounter target={12} suffix="+" label="Target Roles" />
               <AnimatedCounter target={95} suffix="%" label="Satisfaction" />
               <AnimatedCounter target={2000} suffix="+" label="Skills Tracked" />

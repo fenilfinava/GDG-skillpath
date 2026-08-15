@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
 
 import { useResume } from '@/lib/ResumeContext';
+import { supabase } from '@/lib/supabase';
 
 const navItems = [
   { href: '/dashboard', label: 'Overview', icon: LayoutDashboard },
@@ -28,9 +29,10 @@ export default function Sidebar({ isMobileOpen, setIsMobileOpen }: SidebarProps)
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const { hasData, userName: contextUserName, targetRole: contextTargetRole } = useResume();
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     localStorage.removeItem('skillpath_token');
     localStorage.removeItem('skillpath_user');
+    await supabase.auth.signOut();
     router.push('/login');
   };
 
