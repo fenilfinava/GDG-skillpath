@@ -4,16 +4,8 @@ import React, { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
-import { User, Mail, Lock, Eye, EyeOff, Sparkles, ArrowRight, ShieldCheck, CheckCircle, AlertCircle, Briefcase } from 'lucide-react'
+import { User, Mail, Lock, Eye, EyeOff, Sparkles, ArrowRight, ShieldCheck, CheckCircle, AlertCircle } from 'lucide-react'
 import { supabase, isSupabaseConfigured } from '@/lib/supabase'
-
-const TARGET_ROLES = [
-  { id: 'Software Engineer', title: 'Software Engineer', icon: '💻' },
-  { id: 'Fullstack Developer', title: 'Fullstack Developer', icon: '🚀' },
-  { id: 'AI / ML Engineer', title: 'AI / ML Engineer', icon: '🤖' },
-  { id: 'Backend Architect', title: 'Backend Architect', icon: '⚙️' },
-  { id: 'DevOps & Cloud', title: 'DevOps & Cloud', icon: '☁️' },
-]
 
 export default function SignUpPage() {
   const router = useRouter()
@@ -21,7 +13,6 @@ export default function SignUpPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
-  const [selectedRole, setSelectedRole] = useState('Software Engineer')
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -61,7 +52,7 @@ export default function SignUpPage() {
           options: {
             data: {
               full_name: name.trim(),
-              target_role: selectedRole,
+              target_role: 'Software Engineer',
             },
           },
         })
@@ -74,7 +65,7 @@ export default function SignUpPage() {
           id: data.user?.id || `user_${Date.now()}`,
           name: name.trim(),
           email: email.trim(),
-          targetRole: selectedRole,
+          targetRole: 'Software Engineer',
           createdAt: new Date().toISOString(),
         }
 
@@ -94,7 +85,7 @@ export default function SignUpPage() {
           name: name.trim(),
           email: email.trim(),
           password,
-          targetRole: selectedRole,
+          targetRole: 'Software Engineer',
         }),
       })
 
@@ -215,34 +206,6 @@ export default function SignUpPage() {
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full bg-slate-950/80 border border-slate-800 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 rounded-xl pl-10 pr-4 py-2.5 text-sm text-slate-100 placeholder-slate-600 outline-none transition-all"
                 />
-              </div>
-            </div>
-
-            {/* Target Role Preference */}
-            <div>
-              <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
-                <Briefcase className="w-3.5 h-3.5 text-blue-400" />
-                Primary Career Goal
-              </label>
-              <div className="grid grid-cols-1 gap-2 max-h-36 overflow-y-auto pr-1">
-                {TARGET_ROLES.map((role) => (
-                  <button
-                    key={role.id}
-                    type="button"
-                    onClick={() => setSelectedRole(role.id)}
-                    className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium border transition-all text-left ${
-                      selectedRole === role.id
-                        ? 'bg-blue-600/20 border-blue-500/60 text-blue-300'
-                        : 'bg-slate-950/60 border-slate-800 hover:border-slate-700 text-slate-400'
-                    }`}
-                  >
-                    <span className="flex items-center gap-2">
-                      <span>{role.icon}</span>
-                      <span>{role.title}</span>
-                    </span>
-                    {selectedRole === role.id && <CheckCircle className="w-3.5 h-3.5 text-blue-400" />}
-                  </button>
-                ))}
               </div>
             </div>
 
